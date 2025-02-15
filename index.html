@@ -21,118 +21,11 @@
             }
 
             body {
-                font-family: "Montserrat", sans-serif;
+                font-family: "Open Sans", sans-serif;
                 margin: 0;
-                color: var(--light-text);
+                color: var(--text-color);
                 line-height: 1.6;
                 background-color: var(--light-bg);
-            }
-
-            header {
-                background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-                padding: 25px 0;
-            }
-
-            header h1 {
-                color: white;
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-                font-size: 2.5em;
-            }
-
-            .hero {
-                background: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200") center/cover;
-                padding: 120px 0;
-                position: relative;
-            }
-
-            .hero::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(255, 105, 180, 0.6);
-            }
-
-            .hero-content {
-                position: relative;
-                z-index: 1;
-                color: white;
-            }
-
-            .btn {
-                background: var(--accent-color);
-                color: white;
-                padding: 15px 40px;
-                border-radius: 30px;
-                font-size: 1.1em;
-                box-shadow: 0 4px 15px rgba(219, 112, 147, 0.3);
-            }
-
-            .feature {
-                background: white;
-                border-radius: 15px;
-                padding: 40px;
-                box-shadow: 0 10px 30px rgba(255, 105, 180, 0.1);
-            }
-
-            .feature h3 {
-                color: var(--accent-color);
-            }
-
-            body.dark-mode {
-                background-color: var(--dark-bg);
-                color: var(--dark-text);
-            }
-
-            .testimonials {
-                padding: 60px 0;
-                background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
-            }
-
-            .testimonial-card {
-                background: white;
-                border-radius: 10px;
-                padding: 30px;
-                margin: 20px;
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            }
-
-            .style-tips {
-                background: var(--light-bg);
-                padding: 80px 0;
-            }
-
-            .tip-card {
-                border-radius: 20px;
-                overflow: hidden;
-                background: white;
-                transition: transform 0.3s;
-            }
-
-            .tip-card:hover {
-                transform: translateY(-10px);
-            }
-
-            footer {
-                background: var(--primary-color);
-                color: white;
-                padding: 40px 0;
-            }
-
-            @media (max-width: 768px) {
-                header h1 {
-                    font-size: 2em;
-                }
-
-                .hero {
-                    padding: 80px 0;
-                }
-
-                .feature {
-                    margin: 20px 10px;
-                }
             }
 
             h1,
@@ -142,375 +35,184 @@
             h5,
             h6 {
                 font-family: "Inter", sans-serif;
+                color: var(--primary-color);
+            }
+
+            header {
+                background: var(--primary-color);
+                padding: 25px 0;
+            }
+
+            header h1 {
+                color: white;
+                text-align: center;
+                font-size: 2.5em;
+                margin: 0;
+            }
+
+            .hero {
+                background: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200") center/cover;
+                padding: 120px 0;
+                position: relative;
+                text-align: center;
+            }
+
+            .hero::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(40, 44, 52, 0.7);
+            }
+
+            .hero-content {
+                position: relative;
+                z-index: 1;
+                color: white;
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            .btn {
+                background: var(--accent-color);
+                color: white;
+                padding: 15px 40px;
+                border-radius: 30px;
+                font-size: 1.1em;
+                text-decoration: none;
+                display: inline-block;
+                transition: transform 0.3s, background-color 0.3s;
+                border: none;
+                cursor: pointer;
+            }
+
+            .btn:hover {
+                background: var(--accent-color-2);
+                transform: translateY(-3px);
             }
 
             .container {
                 max-width: 1200px;
                 margin: 0 auto;
-                padding: 20px;
-            }
-
-            header {
-                background-color: var(--primary-color);
-                padding: 20px 0;
-                position: relative;
-            }
-
-            header h1 {
-                color: var(--accent-color);
-                margin: 0;
-                font-size: 2em;
-                text-align: center;
-            }
-
-            #darkModeToggle {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                padding: 10px 20px;
-                background-color: var(--accent-color);
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-weight: bold;
-                transition: background-color 0.3s;
-            }
-
-            #darkModeToggle:hover {
-                background-color: var(--accent-color-2);
-            }
-
-            .hero {
-                background-color: var(--light-bg);
-                padding: 80px 0;
-                text-align: center;
-                opacity: 0;
-                animation: fadeIn 1.5s forwards;
-            }
-
-            .hero-content {
-                max-width: 800px;
-                margin: 0 auto;
-            }
-
-            .hero h2 {
-                font-size: 2.5em;
-                margin-bottom: 20px;
-                color: var(--primary-color);
-            }
-
-            .hero p {
-                font-size: 1.2em;
-                color: var(--secondary-color);
-                margin-bottom: 30px;
-            }
-
-            .btn {
-                display: inline-block;
-                padding: 15px 30px;
-                background-color: var(--accent-color);
-                color: white;
-                text-decoration: none;
-                border-radius: 5px;
-                font-weight: bold;
-                transition: background-color 0.3s, transform 0.3s;
-            }
-
-            .btn:hover {
-                background-color: var(--accent-color-2);
-                transform: translateY(-3px);
+                padding: 0 20px;
             }
 
             .features {
-                padding: 60px 0;
-                text-align: center;
-                opacity: 0;
-                animation: fadeIn 1.5s forwards;
-                animation-delay: 0.5s;
-            }
-
-            .features h2 {
-                font-size: 2em;
-                margin-bottom: 40px;
-                color: var(--primary-color);
+                padding: 80px 0;
             }
 
             .feature-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
                 gap: 30px;
-                margin-top: 30px;
+                margin-top: 40px;
             }
 
             .feature {
-                padding: 30px;
-                background-color: white;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+                background: white;
+                border-radius: 15px;
+                padding: 40px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                text-align: center;
                 transition: transform 0.3s;
             }
 
             .feature:hover {
-                transform: translateY(-5px);
+                transform: translateY(-10px);
             }
 
             .feature img {
-                max-width: 80px;
+                width: 80px;
+                height: 80px;
                 margin-bottom: 20px;
             }
 
-            .feature h3 {
-                font-size: 1.5em;
-                margin-bottom: 15px;
-                color: var(--primary-color);
-            }
-
-            .feature p {
-                color: var(--secondary-color);
-            }
-
             .how-it-works {
-                padding: 60px 0;
-                background-color: var(--light-bg);
-                text-align: center;
-                opacity: 0;
-                animation: fadeIn 1.5s forwards;
-                animation-delay: 1s;
-            }
-
-            .how-it-works h2 {
-                font-size: 2em;
-                margin-bottom: 40px;
-                color: var(--primary-color);
+                background: #f5f5f5;
+                padding: 80px 0;
             }
 
             .steps {
                 display: flex;
                 justify-content: space-around;
-                align-items: center;
-                max-width: 900px;
-                margin: 30px auto;
                 flex-wrap: wrap;
-                gap: 20px;
+                gap: 30px;
+                margin-top: 40px;
             }
 
             .step {
+                flex: 1;
+                min-width: 250px;
                 text-align: center;
-                flex: 1 1 250px;
-            }
-
-            .step img {
-                max-width: 100px;
-                margin-bottom: 20px;
-            }
-
-            .step h3 {
-                font-size: 1.3em;
-                margin-bottom: 10px;
-                color: var(--primary-color);
+                padding: 20px;
             }
 
             footer {
-                background-color: var(--primary-color);
+                background: var(--primary-color);
                 color: white;
+                padding: 40px 0;
                 text-align: center;
-                padding: 20px 0;
-                margin-top: 60px;
-                opacity: 0;
-                animation: fadeIn 1.5s forwards;
-                animation-delay: 1.5s;
-            }
-
-            footer p {
-                margin: 0;
-                font-size: 0.9em;
-            }
-
-            .onboarding-modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                justify-content: center;
-                align-items: center;
-                z-index: 1000;
-            }
-
-            .onboarding-content {
-                background: white;
-                padding: 30px;
-                border-radius: 8px;
-                max-width: 500px;
-                width: 90%;
-                text-align: center;
-            }
-
-            .onboarding-content h2 {
-                margin-top: 0;
-                color: var(--primary-color);
-            }
-
-            .onboarding-content p {
-                color: var(--secondary-color);
-            }
-
-            .onboarding-close {
-                margin-top: 20px;
-                padding: 10px 20px;
-                background-color: var(--accent-color);
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-weight: bold;
-                transition: background-color 0.3s;
-            }
-
-            .onboarding-close:hover {
-                background-color: var(--accent-color-2);
-            }
-
-            @keyframes fadeIn {
-                to {
-                    opacity: 1;
-                }
             }
 
             @media (max-width: 768px) {
                 .hero {
-                    padding: 60px 0;
+                    padding: 80px 0;
                 }
-                .hero h2 {
-                    font-size: 2em;
-                }
-                .hero p {
-                    font-size: 1.1em;
-                }
-                .features {
-                    padding: 50px 0;
-                }
-                .features h2 {
-                    font-size: 1.8em;
-                }
+
                 .feature-grid {
                     grid-template-columns: 1fr;
                 }
-                .how-it-works {
-                    padding: 50px 0;
-                }
-                .how-it-works h2 {
-                    font-size: 1.8em;
-                }
+
                 .steps {
                     flex-direction: column;
-                    gap: 40px;
                 }
-            }
-
-            body.dark-mode {
-                background-color: var(--dark-bg);
-                color: var(--dark-text);
-            }
-
-            body.dark-mode .hero,
-            body.dark-mode .how-it-works {
-                background-color: #1e1e1e;
-            }
-
-            body.dark-mode .features h2,
-            body.dark-mode .how-it-works h2,
-            body.dark-mode .step h3,
-            body.dark-mode .feature h3 {
-                color: var(--dark-text);
-            }
-
-            body.dark-mode .feature {
-                background-color: #1e1e1e;
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-            }
-
-            body.dark-mode footer {
-                background-color: #000;
             }
         </style>
     </head>
     <body>
         <header>
-            <div class="container">
-                <h1>StyleScanner.online</h1>
-                <button id="darkModeToggle" aria-label="Toggle Dark Mode">Dark Mode</button>
-            </div>
+            <h1>StyleScanner.online</h1>
         </header>
 
         <section class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <h2>Scan your style, elevate your look</h2>
-                    <p>
-                        Get instant AI-powered feedback on your fashion outfits. Upload a photo and discover how to
-                        enhance your style.
-                    </p>
-                    <a href="#" class="btn">Scan Your Style Now</a>
-                </div>
+            <div class="hero-content">
+                <h2>Scan your style, elevate your look</h2>
+                <p>
+                    Get instant AI-powered feedback on your fashion outfits. Upload a photo and discover how to enhance
+                    your style.
+                </p>
+                <a href="#" class="btn">Scan Your Style Now</a>
             </div>
         </section>
 
-        <section class="features">
-            <div class="container">
-                <h2>Key Features</h2>
-                <div class="feature-grid">
-                    <div class="feature">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/944/944730.png"
-                            alt="Outfit Analysis Icon"
-                            loading="lazy"
-                        />
-                        <h3>Outfit Analysis</h3>
-                        <p>
-                            Get a detailed breakdown of your outfit, including color matching, style categories, and
-                            overall visual impact.
-                        </p>
-                    </div>
-                    <div class="feature">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/149/149060.png"
-                            alt="Style Recommendations Icon"
-                            loading="lazy"
-                        />
-                        <h3>Personalized Recommendations</h3>
-                        <p>
-                            Receive tailored style tips and suggestions to help you enhance your look and explore new
-                            fashion possibilities.
-                        </p>
-                    </div>
-                    <div class="feature">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/577/577575.png"
-                            alt="Fast &amp; Easy Icon"
-                            loading="lazy"
-                        />
-                        <h3>Fast &amp; Easy to Use</h3>
-                        <p>
-                            Upload a photo and receive immediate, actionable feedback within seconds. No complicated
-                            steps!
-                        </p>
-                    </div>
-                    <div class="feature">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/447/447031.png"
-                            alt="Mobile Friendly Icon"
-                            loading="lazy"
-                        />
-                        <h3>Mobile-Friendly</h3>
-                        <p>
-                            Designed to function beautifully on any device, from desktops to smartphones. Perfect for
-                            on-the-go style checks.
-                        </p>
-                    </div>
+        <section class="features container">
+            <h2>Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <img
+                        src="https://cdn-icons-png.flaticon.com/128/944/944730.png"
+                        alt="Outfit Analysis"
+                        loading="lazy"
+                    />
+                    <h3>Outfit Analysis</h3>
+                    <p>Detailed breakdown of your outfit, including color matching and style categories.</p>
+                </div>
+                <div class="feature">
+                    <img
+                        src="https://cdn-icons-png.flaticon.com/128/149/149060.png"
+                        alt="Recommendations"
+                        loading="lazy"
+                    />
+                    <h3>Personalized Recommendations</h3>
+                    <p>Tailored style tips and suggestions to enhance your look.</p>
+                </div>
+                <div class="feature">
+                    <img src="https://cdn-icons-png.flaticon.com/128/577/577575.png" alt="Fast & Easy" loading="lazy" />
+                    <h3>Fast & Easy to Use</h3>
+                    <p>Upload a photo and receive immediate, actionable feedback.</p>
                 </div>
             </div>
         </section>
@@ -522,98 +224,36 @@
                     <div class="step">
                         <img
                             src="https://cdn-icons-png.flaticon.com/128/10921/10921789.png"
-                            alt="Step 1: Upload Photo"
+                            alt="Upload"
                             loading="lazy"
                         />
                         <h3>1. Upload Photo</h3>
-                        <p>Take or upload a photo of your outfit.</p>
+                        <p>Take or upload a photo of your outfit</p>
                     </div>
                     <div class="step">
                         <img
                             src="https://cdn-icons-png.flaticon.com/128/626/626174.png"
-                            alt="Step 2: AI Analysis"
+                            alt="Analysis"
                             loading="lazy"
                         />
                         <h3>2. AI Analysis</h3>
-                        <p>Our advanced AI algorithm analyzes your outfit.</p>
+                        <p>Our AI analyzes your style</p>
                     </div>
                     <div class="step">
                         <img
                             src="https://cdn-icons-png.flaticon.com/128/447/447036.png"
-                            alt="Step 3: Get Feedback"
+                            alt="Feedback"
                             loading="lazy"
                         />
                         <h3>3. Get Feedback</h3>
-                        <p>Receive instant style evaluation and personalized tips.</p>
+                        <p>Receive instant style recommendations</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <footer>
-            <div class="container">
-                <p>&copy; 2025 StyleScanner.online. All rights reserved.</p>
-            </div>
+            <p>&copy; 2024 StyleScanner.online. All rights reserved.</p>
         </footer>
-
-        <div class="onboarding-modal" id="onboardingModal" role="dialog" aria-modal="true">
-            <div class="onboarding-content">
-                <h2>Welcome to StyleScanner.online</h2>
-                <p>
-                    Experience instant AI-powered outfit analysis and personalized style recommendations. Click "Got It"
-                    to start your fashion journey.
-                </p>
-                <button class="onboarding-close" id="onboardingClose">Got It</button>
-            </div>
-        </div>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const darkModeToggle = document.getElementById("darkModeToggle");
-                const body = document.body;
-
-                function toggleDarkMode() {
-                    body.classList.toggle("dark-mode");
-                    const isDarkMode = body.classList.contains("dark-mode");
-                    darkModeToggle.textContent = isDarkMode ? "Light Mode" : "Dark Mode";
-                    localStorage.setItem("darkMode", isDarkMode);
-                }
-
-                darkModeToggle.addEventListener("click", toggleDarkMode);
-
-                if (localStorage.getItem("darkMode") === "true") {
-                    toggleDarkMode();
-                }
-
-                const onboardingModal = document.getElementById("onboardingModal");
-                const onboardingClose = document.getElementById("onboardingClose");
-
-                if (!localStorage.getItem("onboardingShown")) {
-                    onboardingModal.style.display = "flex";
-                }
-
-                onboardingClose.addEventListener("click", function () {
-                    onboardingModal.style.display = "none";
-                    localStorage.setItem("onboardingShown", "true");
-                });
-
-                const lazyImages = document.querySelectorAll("img[loading='lazy']");
-                if ("IntersectionObserver" in window) {
-                    const imageObserver = new IntersectionObserver((entries, observer) => {
-                        entries.forEach((entry) => {
-                            if (entry.isIntersecting) {
-                                const image = entry.target;
-                                image.src = image.src;
-                                imageObserver.unobserve(image);
-                            }
-                        });
-                    });
-
-                    lazyImages.forEach((img) => imageObserver.observe(img));
-                } else {
-                    lazyImages.forEach((img) => (img.src = img.src));
-                }
-            });
-        </script>
     </body>
 </html>
