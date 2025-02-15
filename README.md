@@ -105,6 +105,3 @@ Core Values
 
 # TODO
 
--   add animations and sections
--   make design awesome and even better
--   make it ready for ycombinator launch

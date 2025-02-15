@@ -68,6 +68,12 @@
                 overflow-x: hidden;
             }
 
+            header,
+            main,
+            footer {
+                width: 100%;
+            }
+
             h1,
             h2,
             h3,
@@ -154,6 +160,7 @@
                 min-height: 100vh;
                 background: linear-gradient(rgba(40, 44, 52, 0.7), rgba(40, 44, 52, 0.7)),
                     url("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200") center/cover;
+                background-attachment: fixed;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -213,6 +220,14 @@
                 margin-bottom: 2rem;
             }
 
+            .cta-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                margin-top: 2rem;
+                flex-wrap: wrap;
+            }
+
             .btn {
                 background: var(--accent-color);
                 color: white;
@@ -248,6 +263,19 @@
 
             .btn:hover {
                 background: var(--accent-color-2);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .btn.btn-outline {
+                background: transparent;
+                color: var(--accent-color);
+                border: 2px solid var(--accent-color);
+            }
+
+            .btn.btn-outline:hover {
+                background: var(--accent-color);
+                color: white;
                 transform: translateY(-3px);
                 box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             }
@@ -427,111 +455,130 @@
         </style>
     </head>
     <body>
-        <nav class="nav">
-            <div class="nav-content">
-                <a href="#" class="logo">
-                    <svg class="logo-icon" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
-                    </svg>
-                    StyleScanner.VIP
-                </a>
-                <div class="nav-links">
-                    <a href="#features">Features</a>
-                    <a href="#how-it-works">How It Works</a>
-                    <a href="#upload">Try Now</a>
-                </div>
-            </div>
-        </nav>
-
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Scan your style, elevate your look</h1>
-                <p>Get instant AI-powered feedback on your fashion outfits and personalized style recommendations.</p>
-                <a href="#upload" class="btn">Start Scanning</a>
-            </div>
-        </section>
-
-        <section id="features" class="features">
-            <div class="container">
-                <h2 class="section-title">Our Features</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/944/944730.png"
-                            alt="Analysis"
-                            class="feature-icon"
-                        />
-                        <h3>Smart Analysis</h3>
-                        <p>Advanced AI analysis of your outfit's style, colors, and overall composition.</p>
-                    </div>
-                    <div class="feature-card">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/149/149060.png"
-                            alt="Recommendations"
-                            class="feature-icon"
-                        />
-                        <h3>Personal Recommendations</h3>
-                        <p>Get tailored suggestions to enhance your style based on your unique preferences.</p>
-                    </div>
-                    <div class="feature-card">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/577/577575.png"
-                            alt="Instant"
-                            class="feature-icon"
-                        />
-                        <h3>Instant Results</h3>
-                        <p>Receive detailed feedback within seconds of uploading your photo.</p>
+        <header>
+            <nav class="nav" role="navigation" aria-label="Primary Navigation">
+                <div class="nav-content">
+                    <a href="#" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                        StyleScanner.VIP
+                    </a>
+                    <div class="nav-links">
+                        <a href="#features">Features</a>
+                        <a href="#how-it-works">How It Works</a>
+                        <a href="#upload">Try Now</a>
                     </div>
                 </div>
-            </div>
-        </section>
+            </nav>
+        </header>
 
-        <section id="how-it-works" class="how-it-works">
-            <div class="container">
-                <h2 class="section-title">How It Works</h2>
-                <div class="steps">
-                    <div class="step">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/10921/10921789.png"
-                            alt="Upload"
-                            class="feature-icon"
-                        />
-                        <h3>1. Upload Your Photo</h3>
-                        <p>Share a photo of your outfit</p>
-                    </div>
-                    <div class="step">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/626/626174.png"
-                            alt="Analysis"
-                            class="feature-icon"
-                        />
-                        <h3>2. AI Analysis</h3>
-                        <p>Our AI evaluates your style</p>
-                    </div>
-                    <div class="step">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/447/447036.png"
-                            alt="Results"
-                            class="feature-icon"
-                        />
-                        <h3>3. Get Results</h3>
-                        <p>View your personalized recommendations</p>
+        <main>
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Scan your style, elevate your look</h1>
+                    <p>Get instant AI-powered feedback and expert style recommendations tailored for you.</p>
+                    <div class="cta-buttons">
+                        <a href="#upload" class="btn" aria-label="Start scanning your outfit">Start Scanning</a>
+                        <a href="#how-it-works" class="btn btn-outline" aria-label="Learn how it works">How It Works</a>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="upload" class="upload-section">
-            <div class="container">
-                <h2 class="section-title">Try It Now</h2>
-                <div class="upload-area" id="dropZone">
-                    <h3>Drop your photo here</h3>
-                    <p>or click to select a file</p>
-                    <input type="file" id="fileInput" style="display: none" accept="image/*" />
+            <section id="features" class="features">
+                <div class="container">
+                    <h2 class="section-title">Our Features</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/944/944730.png"
+                                alt="Smart Analysis"
+                                class="feature-icon"
+                                loading="lazy"
+                            />
+                            <h3>Smart Analysis</h3>
+                            <p>Advanced AI analysis of your outfit's style, colors, and composition.</p>
+                        </div>
+                        <div class="feature-card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/149/149060.png"
+                                alt="Personal Recommendations"
+                                class="feature-icon"
+                                loading="lazy"
+                            />
+                            <h3>Personal Recommendations</h3>
+                            <p>Tailored suggestions to enhance your look based on your unique style.</p>
+                        </div>
+                        <div class="feature-card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/577/577575.png"
+                                alt="Instant Results"
+                                class="feature-icon"
+                                loading="lazy"
+                            />
+                            <h3>Instant Results</h3>
+                            <p>Quick feedback delivered within seconds after uploading your photo.</p>
+                        </div>
+                    </div>
                 </div>
-                <button class="btn" onclick="document.getElementById('fileInput').click()">Upload Photo</button>
-            </div>
-        </section>
+            </section>
+
+            <section id="how-it-works" class="how-it-works">
+                <div class="container">
+                    <h2 class="section-title">How It Works</h2>
+                    <div class="steps">
+                        <div class="step">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/10921/10921789.png"
+                                alt="Upload Your Photo"
+                                class="feature-icon"
+                                loading="lazy"
+                            />
+                            <h3>1. Upload Your Photo</h3>
+                            <p>Share a picture of your outfit.</p>
+                        </div>
+                        <div class="step">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/626/626174.png"
+                                alt="AI Analysis"
+                                class="feature-icon"
+                                loading="lazy"
+                            />
+                            <h3>2. AI Analysis</h3>
+                            <p>Our AI evaluates your style and offers insights.</p>
+                        </div>
+                        <div class="step">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/447/447036.png"
+                                alt="Get Recommendations"
+                                class="feature-icon"
+                                loading="lazy"
+                            />
+                            <h3>3. Get Recommendations</h3>
+                            <p>Receive personalized style tips and results immediately.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="upload" class="upload-section">
+                <div class="container">
+                    <h2 class="section-title">Try It Now</h2>
+                    <div class="upload-area" id="dropZone" tabindex="0" aria-label="File upload area">
+                        <h3>Drop your photo here</h3>
+                        <p>or click to select a file</p>
+                        <input type="file" id="fileInput" style="display: none" accept="image/*" />
+                    </div>
+                    <button
+                        class="btn"
+                        onclick="document.getElementById('fileInput').click()"
+                        aria-label="Upload photo"
+                    >
+                        Upload Photo
+                    </button>
+                </div>
+            </section>
+        </main>
 
         <footer>
             <div class="container">
@@ -542,7 +589,6 @@
         <script>
             const nav = document.querySelector(".nav");
             let lastScroll = 0;
-
             window.addEventListener("scroll", () => {
                 const currentScroll = window.pageYOffset;
                 if (currentScroll > lastScroll && currentScroll > 100) {
@@ -552,50 +598,33 @@
                 }
                 lastScroll = currentScroll;
             });
-
             const dropZone = document.getElementById("dropZone");
             const fileInput = document.getElementById("fileInput");
-
             ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
                 dropZone.addEventListener(eventName, preventDefaults, false);
             });
-
             function preventDefaults(e) {
                 e.preventDefault();
                 e.stopPropagation();
             }
-
             ["dragenter", "dragover"].forEach((eventName) => {
-                dropZone.addEventListener(eventName, highlight, false);
+                dropZone.addEventListener(eventName, () => dropZone.classList.add("drag-over"), false);
             });
-
             ["dragleave", "drop"].forEach((eventName) => {
-                dropZone.addEventListener(eventName, unhighlight, false);
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove("drag-over"), false);
             });
-
-            function highlight(e) {
-                dropZone.classList.add("drag-over");
-            }
-
-            function unhighlight(e) {
-                dropZone.classList.remove("drag-over");
-            }
-
             dropZone.addEventListener("drop", handleDrop, false);
             fileInput.addEventListener("change", handleFiles, false);
-
             function handleDrop(e) {
                 const dt = e.dataTransfer;
                 const files = dt.files;
                 handleFiles({ target: { files } });
             }
-
             function handleFiles(e) {
                 const files = e.target.files;
                 if (files.length) {
                     const file = files[0];
                     if (file.type.startsWith("image/")) {
-                        // Handle image upload
                         console.log("Processing image:", file.name);
                     } else {
                         alert("Please upload an image file.");
