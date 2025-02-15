@@ -34,7 +34,6 @@ StyleScanner.online uses modern HTML, CSS, and responsive design techniques to d
 
 ## New Design Ideas & Considerations
 
--   **Dark Mode Toggle:** Implement a dark/light theme toggle to improve accessibility and reduce eye strain.
 -   **Enhanced Animations:** Integrate subtle CSS transitions and micro-interactions (e.g., button hover effects, element fade-ins) for a lively user interface.
 -   **Improved Accessibility:** Utilize semantic HTML5, ARIA roles, and keyboard navigability to create an inclusive experience.
 -   **Responsive Enhancements:** Refine breakpoints and adopt fluid grid layouts to ensure an optimal viewing experience on every device.
@@ -147,3 +146,8 @@ Logo Suggestions
     Colors: #6366F1
 -   Stylized star/sparkle with sharp angles suggesting scanning precision.
     Colors: #F59E0B
+
+# TODO
+
+- remove dark mode
+- make texts readable
