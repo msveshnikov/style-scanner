@@ -12,8 +12,12 @@
             :root {
                 --primary-color: #282c34;
                 --secondary-color: #5c6370;
+                --secondary-color-2: #a0a7b2;
                 --accent-color: #e06c75;
                 --accent-color-2: #61afef;
+                --success-color: #4ADE80;
+                --info-color: #6366F1;
+                --warning-color: #F59E0B;
                 --light-bg: #ffffff;
                 --dark-bg: #282c34;
                 --light-text: #282c34;
@@ -32,6 +36,7 @@
                 color: var(--light-text);
                 line-height: 1.6;
                 background-color: var(--light-bg);
+                overflow-x: hidden;
             }
 
             h1, h2, h3, h4, h5, h6 {
@@ -48,6 +53,11 @@
                 z-index: 1000;
                 backdrop-filter: blur(10px);
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
+            }
+
+            .nav.hidden {
+                transform: translateY(-100%);
             }
 
             .nav-content {
@@ -63,6 +73,15 @@
                 font-size: 1.5rem;
                 color: var(--primary-color);
                 text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                fill: var(--info-color);
             }
 
             .nav-links {
@@ -74,7 +93,23 @@
                 color: var(--primary-color);
                 text-decoration: none;
                 font-weight: 500;
-                transition: color 0.3s;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+            .nav-links a::after {
+                content: '';
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--accent-color);
+                transition: width 0.3s ease;
+            }
+
+            .nav-links a:hover::after {
+                width: 100%;
             }
 
             .nav-links a:hover {
@@ -90,11 +125,32 @@
                 justify-content: center;
                 text-align: center;
                 padding: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, var(--accent-color), var(--accent-color-2));
+                opacity: 0.1;
+                animation: gradientShift 10s infinite alternate;
+            }
+
+            @keyframes gradientShift {
+                0% { transform: scale(1); }
+                100% { transform: scale(1.1); }
             }
 
             .hero-content {
                 max-width: 800px;
                 color: white;
+                position: relative;
+                z-index: 1;
                 opacity: 0;
                 transform: translateY(20px);
                 animation: fadeInUp 1s ease forwards;
@@ -111,6 +167,7 @@
                 font-size: 3.5rem;
                 color: white;
                 margin-bottom: 1rem;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             }
 
             .hero p {
@@ -129,6 +186,26 @@
                 transition: all 0.3s ease;
                 border: none;
                 cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .btn::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                transition: width 0.6s ease, height 0.6s ease;
+            }
+
+            .btn:hover::before {
+                width: 300px;
+                height: 300px;
             }
 
             .btn:hover {
@@ -139,6 +216,7 @@
 
             .features {
                 padding: 5rem 1rem;
+                background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             }
 
             .container {
@@ -149,6 +227,19 @@
             .section-title {
                 text-align: center;
                 margin-bottom: 3rem;
+                position: relative;
+                padding-bottom: 1rem;
+            }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 3px;
+                background: var(--accent-color);
             }
 
             .features-grid {
@@ -163,6 +254,25 @@
                 border-radius: 10px;
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
                 transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .feature-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: var(--accent-color);
+                transform: scaleX(0);
+                transform-origin: left;
+                transition: transform 0.3s ease;
+            }
+
+            .feature-card:hover::before {
+                transform: scaleX(1);
             }
 
             .feature-card:hover {
@@ -173,11 +283,17 @@
                 width: 60px;
                 height: 60px;
                 margin-bottom: 1rem;
+                transition: transform 0.3s ease;
+            }
+
+            .feature-card:hover .feature-icon {
+                transform: scale(1.1);
             }
 
             .how-it-works {
                 background: #f8f9fa;
                 padding: 5rem 1rem;
+                position: relative;
             }
 
             .steps {
@@ -190,11 +306,21 @@
             .step {
                 text-align: center;
                 padding: 2rem;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                transition: all 0.3s ease;
+            }
+
+            .step:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             }
 
             .upload-section {
                 padding: 5rem 1rem;
                 text-align: center;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             }
 
             .upload-area {
@@ -205,10 +331,17 @@
                 border-radius: 10px;
                 cursor: pointer;
                 transition: all 0.3s ease;
+                position: relative;
             }
 
             .upload-area:hover {
                 background: rgba(224, 108, 117, 0.1);
+                transform: scale(1.02);
+            }
+
+            .upload-area.drag-over {
+                background: rgba(224, 108, 117, 0.2);
+                border-color: var(--accent-color-2);
             }
 
             footer {
@@ -216,6 +349,17 @@
                 color: white;
                 padding: 3rem 1rem;
                 text-align: center;
+                position: relative;
+            }
+
+            footer::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, var(--accent-color), var(--accent-color-2));
             }
 
             @media (max-width: 768px) {
@@ -230,13 +374,29 @@
                 .features-grid {
                     grid-template-columns: 1fr;
                 }
+
+                .steps {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
             }
         </style>
     </head>
     <body>
         <nav class="nav">
             <div class="nav-content">
-                <a href="#" class="logo">StyleScanner.VIP</a>
+                <a href="#" class="logo">
+                    <svg class="logo-icon" viewBox="0 0 24 24">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                    StyleScanner.VIP
+                </a>
                 <div class="nav-links">
                     <a href="#features">Features</a>
                     <a href="#how-it-works">How It Works</a>
@@ -302,18 +462,84 @@
         <section id="upload" class="upload-section">
             <div class="container">
                 <h2 class="section-title">Try It Now</h2>
-                <div class="upload-area">
+                <div class="upload-area" id="dropZone">
                     <h3>Drop your photo here</h3>
                     <p>or click to select a file</p>
+                    <input type="file" id="fileInput" style="display: none" accept="image/*">
                 </div>
-                <button class="btn">Upload Photo</button>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">Upload Photo</button>
             </div>
         </section>
 
         <footer>
             <div class="container">
-                <p>&copy; 2024 StyleScanner.VIP - Your Personal Style Assistant</p>
+                <p>&copy; 2025 StyleScanner.VIP - Your Personal Style Assistant</p>
             </div>
         </footer>
+
+        <script>
+            const nav = document.querySelector('.nav');
+            let lastScroll = 0;
+
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    nav.classList.add('hidden');
+                } else {
+                    nav.classList.remove('hidden');
+                }
+                lastScroll = currentScroll;
+            });
+
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropZone.classList.add('drag-over');
+            }
+
+            function unhighlight(e) {
+                dropZone.classList.remove('drag-over');
+            }
+
+            dropZone.addEventListener('drop', handleDrop, false);
+            fileInput.addEventListener('change', handleFiles, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles({ target: { files } });
+            }
+
+            function handleFiles(e) {
+                const files = e.target.files;
+                if (files.length) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        // Handle image upload
+                        console.log('Processing image:', file.name);
+                    } else {
+                        alert('Please upload an image file.');
+                    }
+                }
+            }
+        </script>
     </body>
 </html>
