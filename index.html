@@ -3,88 +3,130 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="StyleScanner.VIP - AI-powered fashion outfit evaluation and style recommendations" />
         <title>StyleScanner.VIP - Fashion Outfit Evaluation</title>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Open+Sans:wght@400;600&family=Montserrat:wght@500&display=swap"
-            rel="stylesheet"
-        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Open+Sans:wght@400;600&family=Montserrat:wght@500&display=swap" rel="stylesheet" />
         <style>
             :root {
-                --primary-color: #ff69b4;
-                --secondary-color: #ffc0cb;
-                --accent-color: #ff1493;
-                --accent-color-2: #db7093;
-                --light-bg: #fff0f5;
-                --dark-bg: #4b0082;
-                --light-text: #333;
-                --dark-text: #ffb6c1;
+                --primary-color: #282c34;
+                --secondary-color: #5c6370;
+                --accent-color: #e06c75;
+                --accent-color-2: #61afef;
+                --light-bg: #ffffff;
+                --dark-bg: #282c34;
+                --light-text: #282c34;
+                --dark-text: #ffffff;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
             }
 
             body {
                 font-family: "Open Sans", sans-serif;
                 margin: 0;
-                color: var(--text-color);
+                color: var(--light-text);
                 line-height: 1.6;
                 background-color: var(--light-bg);
             }
 
-            h1,
-            h2,
-            h3,
-            h4,
-            h5,
-            h6 {
+            h1, h2, h3, h4, h5, h6 {
                 font-family: "Inter", sans-serif;
                 color: var(--primary-color);
             }
 
-            header {
-                background: var(--primary-color);
-                padding: 25px 0;
+            .nav {
+                position: fixed;
+                top: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 1rem;
+                z-index: 1000;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             }
 
-            header h1 {
-                color: white;
-                text-align: center;
-                font-size: 2.5em;
-                margin: 0;
+            .nav-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .logo {
+                font-family: "Montserrat", sans-serif;
+                font-size: 1.5rem;
+                color: var(--primary-color);
+                text-decoration: none;
+            }
+
+            .nav-links {
+                display: flex;
+                gap: 2rem;
+            }
+
+            .nav-links a {
+                color: var(--primary-color);
+                text-decoration: none;
+                font-weight: 500;
+                transition: color 0.3s;
+            }
+
+            .nav-links a:hover {
+                color: var(--accent-color);
             }
 
             .hero {
-                background: url("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200") center/cover;
-                padding: 120px 0;
-                position: relative;
+                min-height: 100vh;
+                background: linear-gradient(rgba(40, 44, 52, 0.7), rgba(40, 44, 52, 0.7)),
+                            url("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200") center/cover;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 text-align: center;
-            }
-
-            .hero::before {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(40, 44, 52, 0.7);
+                padding: 2rem;
             }
 
             .hero-content {
-                position: relative;
-                z-index: 1;
-                color: white;
                 max-width: 800px;
-                margin: 0 auto;
-                padding: 0 20px;
+                color: white;
+                opacity: 0;
+                transform: translateY(20px);
+                animation: fadeInUp 1s ease forwards;
+            }
+
+            @keyframes fadeInUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+                color: white;
+                margin-bottom: 1rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+                margin-bottom: 2rem;
             }
 
             .btn {
                 background: var(--accent-color);
                 color: white;
-                padding: 15px 40px;
+                padding: 1rem 2rem;
                 border-radius: 30px;
-                font-size: 1.1em;
+                font-size: 1.1rem;
                 text-decoration: none;
                 display: inline-block;
-                transition: transform 0.3s, background-color 0.3s;
+                transition: all 0.3s ease;
                 border: none;
                 cursor: pointer;
             }
@@ -92,168 +134,186 @@
             .btn:hover {
                 background: var(--accent-color-2);
                 transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+
+            .features {
+                padding: 5rem 1rem;
             }
 
             .container {
                 max-width: 1200px;
                 margin: 0 auto;
-                padding: 0 20px;
             }
 
-            .features {
-                padding: 80px 0;
-            }
-
-            .feature-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 30px;
-                margin-top: 40px;
-            }
-
-            .feature {
-                background: white;
-                border-radius: 15px;
-                padding: 40px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            .section-title {
                 text-align: center;
-                transition: transform 0.3s;
+                margin-bottom: 3rem;
             }
 
-            .feature:hover {
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+
+            .feature-card {
+                background: white;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+
+            .feature-card:hover {
                 transform: translateY(-10px);
             }
 
-            .feature img {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 20px;
+            .feature-icon {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 1rem;
             }
 
             .how-it-works {
-                background: #f5f5f5;
-                padding: 80px 0;
+                background: #f8f9fa;
+                padding: 5rem 1rem;
             }
 
             .steps {
-                display: flex;
-                justify-content: space-around;
-                flex-wrap: wrap;
-                gap: 30px;
-                margin-top: 40px;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+                margin-top: 3rem;
             }
 
             .step {
-                flex: 1;
-                min-width: 250px;
                 text-align: center;
-                padding: 20px;
+                padding: 2rem;
+            }
+
+            .upload-section {
+                padding: 5rem 1rem;
+                text-align: center;
+            }
+
+            .upload-area {
+                max-width: 600px;
+                margin: 2rem auto;
+                padding: 3rem;
+                border: 2px dashed var(--accent-color);
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .upload-area:hover {
+                background: rgba(224, 108, 117, 0.1);
             }
 
             footer {
                 background: var(--primary-color);
                 color: white;
-                padding: 40px 0;
+                padding: 3rem 1rem;
                 text-align: center;
             }
 
             @media (max-width: 768px) {
-                .hero {
-                    padding: 80px 0;
+                .nav-links {
+                    display: none;
                 }
 
-                .feature-grid {
+                .hero h1 {
+                    font-size: 2.5rem;
+                }
+
+                .features-grid {
                     grid-template-columns: 1fr;
-                }
-
-                .steps {
-                    flex-direction: column;
                 }
             }
         </style>
     </head>
     <body>
-        <header>
-            <h1>StyleScanner.VIP</h1>
-        </header>
+        <nav class="nav">
+            <div class="nav-content">
+                <a href="#" class="logo">StyleScanner.VIP</a>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#upload">Try Now</a>
+                </div>
+            </div>
+        </nav>
 
         <section class="hero">
             <div class="hero-content">
-                <h2>Scan your style, elevate your look</h2>
-                <p>
-                    Get instant AI-powered feedback on your fashion outfits. Upload a photo and discover how to enhance
-                    your style.
-                </p>
-                <a href="#" class="btn">Scan Your Style Now</a>
+                <h1>Scan your style, elevate your look</h1>
+                <p>Get instant AI-powered feedback on your fashion outfits and personalized style recommendations.</p>
+                <a href="#upload" class="btn">Start Scanning</a>
             </div>
         </section>
 
-        <section class="features container">
-            <h2>Key Features</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <img
-                        src="https://cdn-icons-png.flaticon.com/128/944/944730.png"
-                        alt="Outfit Analysis"
-                        loading="lazy"
-                    />
-                    <h3>Outfit Analysis</h3>
-                    <p>Detailed breakdown of your outfit, including color matching and style categories.</p>
-                </div>
-                <div class="feature">
-                    <img
-                        src="https://cdn-icons-png.flaticon.com/128/149/149060.png"
-                        alt="Recommendations"
-                        loading="lazy"
-                    />
-                    <h3>Personalized Recommendations</h3>
-                    <p>Tailored style tips and suggestions to enhance your look.</p>
-                </div>
-                <div class="feature">
-                    <img src="https://cdn-icons-png.flaticon.com/128/577/577575.png" alt="Fast & Easy" loading="lazy" />
-                    <h3>Fast & Easy to Use</h3>
-                    <p>Upload a photo and receive immediate, actionable feedback.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="how-it-works">
+        <section id="features" class="features">
             <div class="container">
-                <h2>How It Works</h2>
+                <h2 class="section-title">Our Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <img src="https://cdn-icons-png.flaticon.com/128/944/944730.png" alt="Analysis" class="feature-icon">
+                        <h3>Smart Analysis</h3>
+                        <p>Advanced AI analysis of your outfit's style, colors, and overall composition.</p>
+                    </div>
+                    <div class="feature-card">
+                        <img src="https://cdn-icons-png.flaticon.com/128/149/149060.png" alt="Recommendations" class="feature-icon">
+                        <h3>Personal Recommendations</h3>
+                        <p>Get tailored suggestions to enhance your style based on your unique preferences.</p>
+                    </div>
+                    <div class="feature-card">
+                        <img src="https://cdn-icons-png.flaticon.com/128/577/577575.png" alt="Instant" class="feature-icon">
+                        <h3>Instant Results</h3>
+                        <p>Receive detailed feedback within seconds of uploading your photo.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
                 <div class="steps">
                     <div class="step">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/10921/10921789.png"
-                            alt="Upload"
-                            loading="lazy"
-                        />
-                        <h3>1. Upload Photo</h3>
-                        <p>Take or upload a photo of your outfit</p>
+                        <img src="https://cdn-icons-png.flaticon.com/128/10921/10921789.png" alt="Upload" class="feature-icon">
+                        <h3>1. Upload Your Photo</h3>
+                        <p>Share a photo of your outfit</p>
                     </div>
                     <div class="step">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/626/626174.png"
-                            alt="Analysis"
-                            loading="lazy"
-                        />
+                        <img src="https://cdn-icons-png.flaticon.com/128/626/626174.png" alt="Analysis" class="feature-icon">
                         <h3>2. AI Analysis</h3>
-                        <p>Our AI analyzes your style</p>
+                        <p>Our AI evaluates your style</p>
                     </div>
                     <div class="step">
-                        <img
-                            src="https://cdn-icons-png.flaticon.com/128/447/447036.png"
-                            alt="Feedback"
-                            loading="lazy"
-                        />
-                        <h3>3. Get Feedback</h3>
-                        <p>Receive instant style recommendations</p>
+                        <img src="https://cdn-icons-png.flaticon.com/128/447/447036.png" alt="Results" class="feature-icon">
+                        <h3>3. Get Results</h3>
+                        <p>View your personalized recommendations</p>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section id="upload" class="upload-section">
+            <div class="container">
+                <h2 class="section-title">Try It Now</h2>
+                <div class="upload-area">
+                    <h3>Drop your photo here</h3>
+                    <p>or click to select a file</p>
+                </div>
+                <button class="btn">Upload Photo</button>
             </div>
         </section>
 
         <footer>
-            <p>&copy; 2024 StyleScanner.VIP. All rights reserved.</p>
+            <div class="container">
+                <p>&copy; 2024 StyleScanner.VIP - Your Personal Style Assistant</p>
+            </div>
         </footer>
     </body>
 </html>

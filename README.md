@@ -149,5 +149,6 @@ Logo Suggestions
 
 # TODO
 
-- remove dark mode
-- make texts readable
+- add animations and sections
+- make design awesome
+- make it ready for ycombinator launch
