@@ -2,7 +2,7 @@
 
 StyleScanner.VIP is an innovative web application that delivers instant, AI-powered feedback on your fashion outfits. Upload a photo and discover detailed outfit analysis, personalized style recommendations, and quick, user-friendly insights to help you elevate your look.
 
----
+![alt text](image.png)
 
 ## Table of Contents
 
@@ -14,7 +14,6 @@ StyleScanner.VIP is an innovative web application that delivers instant, AI-powe
 -   [Future Enhancements](#future-enhancements)
 -   [Contributing](#contributing)
 -   [License](#license)
-
 
 ## Project Overview
 
