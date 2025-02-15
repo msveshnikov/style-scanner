@@ -1,6 +1,6 @@
-# StyleScanner.online - Fashion Outfit Evaluation
+# StyleScanner.VIP - Fashion Outfit Evaluation
 
-StyleScanner.online is an innovative web application that delivers instant, AI-powered feedback on your fashion outfits. Upload a photo and discover detailed outfit analysis, personalized style recommendations, and quick, user-friendly insights to help you elevate your look.
+StyleScanner.VIP is an innovative web application that delivers instant, AI-powered feedback on your fashion outfits. Upload a photo and discover detailed outfit analysis, personalized style recommendations, and quick, user-friendly insights to help you elevate your look.
 
 ---
 
@@ -19,7 +19,7 @@ StyleScanner.online is an innovative web application that delivers instant, AI-p
 
 ## Project Overview
 
-StyleScanner.online uses modern HTML, CSS, and responsive design techniques to deliver a seamless user experience on any device. Focused on clarity, simplicity, and intuitive interactions, the application leverages AI to provide fashion evaluations and style suggestions. The current implementation is built as a static website contained in a single `index.html` file for simplicity and rapid iteration.
+StyleScanner.VIP uses modern HTML, CSS, and responsive design techniques to deliver a seamless user experience on any device. Focused on clarity, simplicity, and intuitive interactions, the application leverages AI to provide fashion evaluations and style suggestions. The current implementation is built as a static website contained in a single `index.html` file for simplicity and rapid iteration.
 
 ---
 
@@ -72,9 +72,9 @@ While the current setup is a single static file, future iterations will adopt a 
 ## Installation & Usage
 
 1. Clone the repository:
-   git clone https://github.com/yourusername/styscanner.online.git
+   git clone https://github.com/yourusername/styscanner.VIP.git
 2. Navigate to the project folder:
-   cd styscanner.online
+   cd styscanner.VIP
 3. Open the `index.html` file in any modern web browser.
 4. For hosting, deploy the repository using a static site hosting service (e.g., GitHub Pages, Netlify).
 
