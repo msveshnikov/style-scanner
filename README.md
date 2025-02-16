@@ -105,3 +105,18 @@ Core Values
 
 # TODO
 
+Unlike the other commenter, I'll actually give you some useful feedback.
+
+The page looks like a collection of elements that don't go with each other.
+
+You're using things like animations and other visual "enhancers" which actually don't help the overall cohesiveness and design of the page. For example... you're using a type of icons in the "our features" section, and those cards have a hover effect that is completely unnecessary... what's the point of the hover effect if they're not clickable? Then, the next section, "how it works" has different style in icons, different hover effect, and it's not cohesive.
+
+You should work on your copy as well. Instead of features, list benefits... what's in it for me? I don't care how cool your app is, I care about what it will do for me. Tell me more why I need your app and not how cool your app is. Sell me a hole, not a drill.
+
+Go to sites like elements.envato.com to find FIGMA designs of landing pages, even if you don't buy the subscription, use it for inspiration... if you are not gonna use a designer, at least copy one and make sure your app uses the same UI elements throughout. If you're gonna use a style of icon, use that same style in the entire site... if you're using a card component, use the same card component in every card displayed on your site... same with fonts, etc.
+
+I hope this helps.
+
+Btw - there is a great video on high converting landing pages that I am using for one of my SaaS projects: https://youtu.be/g3cmNDlwGEg?si=MMeYUPIkF5RmTkpQ
+
+Good luck!
