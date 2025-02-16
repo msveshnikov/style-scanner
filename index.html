@@ -1,507 +1,520 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="StyleScanner.VIP - AI-powered fashion outfit analysis and personalized style recommendations. Get instant feedback on your outfits and elevate your look."
-    />
-    <meta
-      name="keywords"
-      content="fashion AI, style analysis, outfit recommendations, personal stylist, fashion tech, outfit evaluation"
-    />
-    <meta name="author" content="StyleScanner.VIP" />
-    <meta property="og:title" content="StyleScanner.VIP - AI Fashion Analysis" />
-    <meta
-      property="og:description"
-      content="Get instant AI-powered feedback on your fashion outfits and personalized style recommendations."
-    />
-    <meta property="og:image" content="https://stylescanner.vip/preview.jpg" />
-    <meta property="og:url" content="https://stylescanner.vip" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="StyleScanner.VIP - AI Fashion Analysis" />
-    <meta
-      name="twitter:description"
-      content="Transform your style with AI-powered fashion analysis and personalized recommendations."
-    />
-    <meta name="twitter:image" content="https://stylescanner.vip/preview.jpg" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://stylescanner.vip" />
-    <title>StyleScanner.VIP - AI Fashion Analysis &amp; Style Recommendations</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Open+Sans:wght@400;600&family=Montserrat:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --primary-color: #282c34;
-        --secondary-color: #5c6370;
-        --secondary-color-2: #a0a7b2;
-        --accent-color: #e06c75;
-        --accent-color-2: #61afef;
-        --success-color: #4ade80;
-        --info-color: #6366f1;
-        --warning-color: #f59e0b;
-        --light-bg: #ffffff;
-        --dark-bg: #282c34;
-        --light-text: #282c34;
-        --dark-text: #ffffff;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: "Open Sans", sans-serif;
-        margin: 0;
-        color: var(--light-text);
-        line-height: 1.6;
-        background-color: var(--light-bg);
-        overflow-x: hidden;
-      }
-      header,
-      main,
-      footer {
-        width: 100%;
-      }
-      h1,
-      h2,
-      h3,
-      h4,
-      h5,
-      h6 {
-        font-family: "Inter", sans-serif;
-        color: var(--primary-color);
-      }
-      .nav {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        background: rgba(255, 255, 255, 0.95);
-        padding: 1rem;
-        z-index: 1000;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-      }
-      .nav.hidden {
-        transform: translateY(-100%);
-      }
-      .nav-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .logo {
-        font-family: "Montserrat", sans-serif;
-        font-size: 1.5rem;
-        color: var(--primary-color);
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .logo-icon {
-        width: 32px;
-        height: 32px;
-        fill: var(--info-color);
-      }
-      .nav-links {
-        display: flex;
-        gap: 2rem;
-      }
-      .nav-links a {
-        color: var(--primary-color);
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        position: relative;
-      }
-      .nav-links a::after {
-        content: "";
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--accent-color);
-        transition: width 0.3s ease;
-      }
-      .nav-links a:hover::after {
-        width: 100%;
-      }
-      .nav-links a:hover {
-        color: var(--accent-color);
-      }
-      .hero {
-        min-height: 100vh;
-        background: linear-gradient(
-            rgba(40, 44, 52, 0.7),
-            rgba(40, 44, 52, 0.7)
-          ),
-          url("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200")
-            center/cover;
-        background-attachment: fixed;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 2rem;
-        position: relative;
-        overflow: hidden;
-      }
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(45deg, var(--accent-color), var(--accent-color-2));
-        opacity: 0.1;
-        animation: gradientShift 10s infinite alternate;
-      }
-      @keyframes gradientShift {
-        0% {
-          transform: scale(1);
-        }
-        100% {
-          transform: scale(1.1);
-        }
-      }
-      .hero-content {
-        max-width: 800px;
-        color: white;
-        position: relative;
-        z-index: 1;
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 1s ease forwards;
-      }
-      @keyframes fadeInUp {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .hero h1 {
-        font-size: 3.5rem;
-        color: white;
-        margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-      }
-      .hero p {
-        font-size: 1.2rem;
-        margin-bottom: 2rem;
-      }
-      .cta-buttons {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 2rem;
-        flex-wrap: wrap;
-      }
-      .btn {
-        background: var(--accent-color);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 30px;
-        font-size: 1.1rem;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-      }
-      .btn::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.6s ease, height 0.6s ease;
-      }
-      .btn:hover::before {
-        width: 300px;
-        height: 300px;
-      }
-      .btn:hover {
-        background: var(--accent-color-2);
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      }
-      .btn.btn-outline {
-        background: transparent;
-        color: var(--accent-color);
-        border: 2px solid var(--accent-color);
-      }
-      .btn.btn-outline:hover {
-        background: var(--accent-color);
-        color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      }
-      section {
-        padding: 5rem 1rem;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      .section-title {
-        text-align: center;
-        margin-bottom: 3rem;
-        position: relative;
-        padding-bottom: 1rem;
-      }
-      .section-title::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60px;
-        height: 3px;
-        background: var(--accent-color);
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-      }
-      .card {
-        background: #fff;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        transition: box-shadow 0.3s ease;
-        text-align: center;
-      }
-      .card:hover {
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      }
-      .card img {
-        width: 60px;
-        height: 60px;
-        object-fit: contain;
-        margin-bottom: 1rem;
-      }
-      .upload-section {
-        text-align: center;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-      }
-      .upload-area {
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 3rem;
-        border: 2px dashed var(--accent-color);
-        border-radius: 10px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-      }
-      .upload-area:hover {
-        background: rgba(224, 108, 117, 0.1);
-        transform: scale(1.02);
-      }
-      .upload-area.drag-over {
-        background: rgba(224, 108, 117, 0.2);
-        border-color: var(--accent-color-2);
-      }
-      footer {
-        background: var(--primary-color);
-        color: white;
-        padding: 3rem 1rem;
-        text-align: center;
-        position: relative;
-      }
-      footer::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, var(--accent-color), var(--accent-color-2));
-      }
-      @media (max-width: 768px) {
-        .nav-links {
-          display: none;
-        }
-        .hero h1 {
-          font-size: 2.5rem;
-        }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        * {
-          animation: none !important;
-          transition: none !important;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <nav class="nav" role="navigation" aria-label="Primary Navigation">
-        <div class="nav-content">
-          <a href="#" class="logo">
-            <svg class="logo-icon" viewBox="0 0 24 24">
-              <path
-                d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-              ></path>
-            </svg>
-            StyleScanner.VIP
-          </a>
-          <div class="nav-links">
-            <a href="#benefits">Benefits</a>
-            <a href="#how-it-works">How It Works</a>
-            <a href="#upload">Try Now</a>
-          </div>
-        </div>
-      </nav>
-    </header>
-    <main>
-      <section class="hero">
-        <div class="hero-content">
-          <h1>Scan your style, elevate your look</h1>
-          <p>
-            Get instant AI-powered feedback and personalized style guidance
-            tailored for you.
-          </p>
-          <div class="cta-buttons">
-            <a href="#upload" class="btn" aria-label="Start scanning your outfit">Start Scanning</a>
-            <a href="#how-it-works" class="btn btn-outline" aria-label="Learn how it works">How It Works</a>
-          </div>
-        </div>
-      </section>
-      <section id="benefits">
-        <div class="container">
-          <h2 class="section-title">Why Choose StyleScanner.VIP?</h2>
-          <div class="grid">
-            <div class="card">
-              <img src="https://cdn-icons-png.flaticon.com/128/2921/2921822.png" alt="Instant Outfit Analysis" loading="lazy" />
-              <h3>Instant Outfit Analysis</h3>
-              <p>
-                Receive rapid insights to boost your confidence and make quick style decisions.
-              </p>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="StyleScanner.VIP - AI-powered fashion outfit analysis and personalized style recommendations. Get instant feedback on your outfits and elevate your look."
+        />
+        <meta
+            name="keywords"
+            content="fashion AI, style analysis, outfit recommendations, personal stylist, fashion tech, outfit evaluation"
+        />
+        <meta name="author" content="StyleScanner.VIP" />
+        <meta property="og:title" content="StyleScanner.VIP - AI Fashion Analysis" />
+        <meta
+            property="og:description"
+            content="Get instant AI-powered feedback on your fashion outfits and personalized style recommendations."
+        />
+        <meta property="og:image" content="https://stylescanner.vip/preview.jpg" />
+        <meta property="og:url" content="https://stylescanner.vip" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="StyleScanner.VIP - AI Fashion Analysis" />
+        <meta
+            name="twitter:description"
+            content="Transform your style with AI-powered fashion analysis and personalized recommendations."
+        />
+        <meta name="twitter:image" content="https://stylescanner.vip/preview.jpg" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://stylescanner.vip" />
+        <title>StyleScanner.VIP - AI Fashion Analysis &amp; Style Recommendations</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="icon" type="image/png" href="favicon.png" />
+        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Open+Sans:wght@400;600&family=Montserrat:wght@500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --primary-color: #282c34;
+                --secondary-color: #5c6370;
+                --secondary-color-2: #a0a7b2;
+                --accent-color: #e06c75;
+                --accent-color-2: #61afef;
+                --success-color: #4ade80;
+                --info-color: #6366f1;
+                --warning-color: #f59e0b;
+                --light-bg: #ffffff;
+                --dark-bg: #282c34;
+                --light-text: #282c34;
+                --dark-text: #ffffff;
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: "Open Sans", sans-serif;
+                margin: 0;
+                color: var(--light-text);
+                line-height: 1.6;
+                background-color: var(--light-bg);
+                overflow-x: hidden;
+            }
+            header,
+            main,
+            footer {
+                width: 100%;
+            }
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                font-family: "Inter", sans-serif;
+                color: var(--primary-color);
+            }
+            .nav {
+                position: fixed;
+                top: 0;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                padding: 1rem;
+                z-index: 1000;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease;
+            }
+            .nav.hidden {
+                transform: translateY(-100%);
+            }
+            .nav-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .logo {
+                font-family: "Montserrat", sans-serif;
+                font-size: 1.5rem;
+                color: var(--primary-color);
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                fill: var(--info-color);
+            }
+            .nav-links {
+                display: flex;
+                gap: 2rem;
+            }
+            .nav-links a {
+                color: var(--primary-color);
+                text-decoration: none;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+            .nav-links a::after {
+                content: "";
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--accent-color);
+                transition: width 0.3s ease;
+            }
+            .nav-links a:hover::after {
+                width: 100%;
+            }
+            .nav-links a:hover {
+                color: var(--accent-color);
+            }
+            .hero {
+                min-height: 100vh;
+                background: linear-gradient(rgba(40, 44, 52, 0.7), rgba(40, 44, 52, 0.7)),
+                    url("https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200") center/cover;
+                background-attachment: fixed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+            .hero::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(45deg, var(--accent-color), var(--accent-color-2));
+                opacity: 0.1;
+                animation: gradientShift 10s infinite alternate;
+            }
+            @keyframes gradientShift {
+                0% {
+                    transform: scale(1);
+                }
+                100% {
+                    transform: scale(1.1);
+                }
+            }
+            .hero-content {
+                max-width: 800px;
+                color: white;
+                position: relative;
+                z-index: 1;
+                opacity: 0;
+                transform: translateY(20px);
+                animation: fadeInUp 1s ease forwards;
+            }
+            @keyframes fadeInUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .hero h1 {
+                font-size: 3.5rem;
+                color: white;
+                margin-bottom: 1rem;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            .hero p {
+                font-size: 1.2rem;
+                margin-bottom: 2rem;
+            }
+            .cta-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                margin-top: 2rem;
+                flex-wrap: wrap;
+            }
+            .btn {
+                background: var(--accent-color);
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 30px;
+                font-size: 1.1rem;
+                text-decoration: none;
+                display: inline-block;
+                transition: all 0.3s ease;
+                border: none;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+            .btn::before {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                transition: width 0.6s ease, height 0.6s ease;
+            }
+            .btn:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+            .btn:hover {
+                background: var(--accent-color-2);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+            .btn.btn-outline {
+                background: transparent;
+                color: var(--accent-color);
+                border: 2px solid var(--accent-color);
+            }
+            .btn.btn-outline:hover {
+                background: var(--accent-color);
+                color: white;
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            }
+            section {
+                padding: 5rem 1rem;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .section-title {
+                text-align: center;
+                margin-bottom: 3rem;
+                position: relative;
+                padding-bottom: 1rem;
+            }
+            .section-title::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 3px;
+                background: var(--accent-color);
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+            .card {
+                background: #fff;
+                padding: 2rem;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                transition: box-shadow 0.3s ease;
+                text-align: center;
+            }
+            .card:hover {
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+            .card img {
+                width: 60px;
+                height: 60px;
+                object-fit: contain;
+                margin-bottom: 1rem;
+            }
+            .upload-section {
+                text-align: center;
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            }
+            .upload-area {
+                max-width: 600px;
+                margin: 2rem auto;
+                padding: 3rem;
+                border: 2px dashed var(--accent-color);
+                border-radius: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+            .upload-area:hover {
+                background: rgba(224, 108, 117, 0.1);
+                transform: scale(1.02);
+            }
+            .upload-area.drag-over {
+                background: rgba(224, 108, 117, 0.2);
+                border-color: var(--accent-color-2);
+            }
+            footer {
+                background: var(--primary-color);
+                color: white;
+                padding: 3rem 1rem;
+                text-align: center;
+                position: relative;
+            }
+            footer::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, var(--accent-color), var(--accent-color-2));
+            }
+            @media (max-width: 768px) {
+                .nav-links {
+                    display: none;
+                }
+                .hero h1 {
+                    font-size: 2.5rem;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <nav class="nav" role="navigation" aria-label="Primary Navigation">
+                <div class="nav-content">
+                    <a href="#" class="logo">
+                        <svg class="logo-icon" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                        StyleScanner.VIP
+                    </a>
+                    <div class="nav-links">
+                        <a href="#benefits">Benefits</a>
+                        <a href="#how-it-works">How It Works</a>
+                        <a href="#upload">Try Now</a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Scan your style, elevate your look</h1>
+                    <p>Get instant AI-powered feedback and personalized style guidance tailored for you.</p>
+                    <div class="cta-buttons">
+                        <a href="#upload" class="btn" aria-label="Start scanning your outfit">Start Scanning</a>
+                        <a href="#how-it-works" class="btn btn-outline" aria-label="Learn how it works">How It Works</a>
+                    </div>
+                </div>
+            </section>
+            <section id="benefits">
+                <div class="container">
+                    <h2 class="section-title">Why Choose StyleScanner.VIP?</h2>
+                    <div class="grid">
+                        <div class="card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/2921/2921822.png"
+                                alt="Instant Outfit Analysis"
+                                loading="lazy"
+                            />
+                            <h3>Instant Outfit Analysis</h3>
+                            <p>Receive rapid insights to boost your confidence and make quick style decisions.</p>
+                        </div>
+                        <div class="card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/2921/2921823.png"
+                                alt="Personalized Style Guidance"
+                                loading="lazy"
+                            />
+                            <h3>Personalized Style Guidance</h3>
+                            <p>Enjoy customized recommendations tailored to your unique taste.</p>
+                        </div>
+                        <div class="card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/2921/2921824.png"
+                                alt="Effortless Transformation"
+                                loading="lazy"
+                            />
+                            <h3>Effortless Transformation</h3>
+                            <p>Transform your look with easy-to-apply, expert advice at your fingertips.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="how-it-works" class="how-it-works">
+                <div class="container">
+                    <h2 class="section-title">How It Works</h2>
+                    <div class="grid">
+                        <div class="card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/2921/2921825.png"
+                                alt="Upload Your Photo"
+                                loading="lazy"
+                            />
+                            <h3>1. Upload Your Photo</h3>
+                            <p>Simply select or drag and drop your outfit photo.</p>
+                        </div>
+                        <div class="card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/2921/2921826.png"
+                                alt="AI Evaluation"
+                                loading="lazy"
+                            />
+                            <h3>2. AI Evaluation</h3>
+                            <p>Our AI quickly analyzes your style and outfit details.</p>
+                        </div>
+                        <div class="card">
+                            <img
+                                src="https://cdn-icons-png.flaticon.com/128/2921/2921827.png"
+                                alt="Receive Recommendations"
+                                loading="lazy"
+                            />
+                            <h3>3. Receive Recommendations</h3>
+                            <p>Get personalized tips and suggestions instantly.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="upload" class="upload-section">
+                <div class="container">
+                    <h2 class="section-title">Try It Now</h2>
+                    <div class="upload-area" id="dropZone" tabindex="0" aria-label="File upload area">
+                        <h3>Drop your photo here</h3>
+                        <p>or click to select a file</p>
+                        <input type="file" id="fileInput" style="display: none" accept="image/*" />
+                    </div>
+                    <button
+                        class="btn"
+                        onclick="document.getElementById('fileInput').click()"
+                        aria-label="Upload photo"
+                    >
+                        Upload Photo
+                    </button>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <div class="container">
+                <p>&copy; 2025 StyleScanner.VIP - Your Personal Style Assistant</p>
             </div>
-            <div class="card">
-              <img src="https://cdn-icons-png.flaticon.com/128/2921/2921823.png" alt="Personalized Style Guidance" loading="lazy" />
-              <h3>Personalized Style Guidance</h3>
-              <p>
-                Enjoy customized recommendations tailored to your unique taste.
-              </p>
-            </div>
-            <div class="card">
-              <img src="https://cdn-icons-png.flaticon.com/128/2921/2921824.png" alt="Effortless Transformation" loading="lazy" />
-              <h3>Effortless Transformation</h3>
-              <p>
-                Transform your look with easy-to-apply, expert advice at your fingertips.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="how-it-works" class="how-it-works">
-        <div class="container">
-          <h2 class="section-title">How It Works</h2>
-          <div class="grid">
-            <div class="card">
-              <img src="https://cdn-icons-png.flaticon.com/128/2921/2921825.png" alt="Upload Your Photo" loading="lazy" />
-              <h3>1. Upload Your Photo</h3>
-              <p>Simply select or drag and drop your outfit photo.</p>
-            </div>
-            <div class="card">
-              <img src="https://cdn-icons-png.flaticon.com/128/2921/2921826.png" alt="AI Evaluation" loading="lazy" />
-              <h3>2. AI Evaluation</h3>
-              <p>Our AI quickly analyzes your style and outfit details.</p>
-            </div>
-            <div class="card">
-              <img src="https://cdn-icons-png.flaticon.com/128/2921/2921827.png" alt="Receive Recommendations" loading="lazy" />
-              <h3>3. Receive Recommendations</h3>
-              <p>Get personalized tips and suggestions instantly.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="upload" class="upload-section">
-        <div class="container">
-          <h2 class="section-title">Try It Now</h2>
-          <div class="upload-area" id="dropZone" tabindex="0" aria-label="File upload area">
-            <h3>Drop your photo here</h3>
-            <p>or click to select a file</p>
-            <input type="file" id="fileInput" style="display: none" accept="image/*" />
-          </div>
-          <button class="btn" onclick="document.getElementById('fileInput').click()" aria-label="Upload photo">
-            Upload Photo
-          </button>
-        </div>
-      </section>
-    </main>
-    <footer>
-      <div class="container">
-        <p>&copy; 2025 StyleScanner.VIP - Your Personal Style Assistant</p>
-      </div>
-    </footer>
-    <script>
-      const nav = document.querySelector(".nav");
-      let lastScroll = 0;
-      window.addEventListener("scroll", () => {
-        const currentScroll = window.pageYOffset;
-        if (currentScroll > lastScroll && currentScroll > 100) {
-          nav.classList.add("hidden");
-        } else {
-          nav.classList.remove("hidden");
-        }
-        lastScroll = currentScroll;
-      });
-      const dropZone = document.getElementById("dropZone");
-      const fileInput = document.getElementById("fileInput");
-      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-      });
-      function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      ["dragenter", "dragover"].forEach((eventName) => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.add("drag-over"), false);
-      });
-      ["dragleave", "drop"].forEach((eventName) => {
-        dropZone.addEventListener(eventName, () => dropZone.classList.remove("drag-over"), false);
-      });
-      dropZone.addEventListener("drop", handleDrop, false);
-      fileInput.addEventListener("change", handleFiles, false);
-      function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles({ target: { files } });
-      }
-      function handleFiles(e) {
-        const files = e.target.files;
-        if (files.length) {
-          const file = files[0];
-          if (file.type.startsWith("image/")) {
-            console.log("Processing image:", file.name);
-          } else {
-            alert("Please upload an image file.");
-          }
-        }
-      }
-    </script>
-  </body>
+        </footer>
+        <script>
+            const nav = document.querySelector(".nav");
+            let lastScroll = 0;
+            window.addEventListener("scroll", () => {
+                const currentScroll = window.pageYOffset;
+                if (currentScroll > lastScroll && currentScroll > 100) {
+                    nav.classList.add("hidden");
+                } else {
+                    nav.classList.remove("hidden");
+                }
+                lastScroll = currentScroll;
+            });
+            const dropZone = document.getElementById("dropZone");
+            const fileInput = document.getElementById("fileInput");
+            ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            ["dragenter", "dragover"].forEach((eventName) => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add("drag-over"), false);
+            });
+            ["dragleave", "drop"].forEach((eventName) => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove("drag-over"), false);
+            });
+            dropZone.addEventListener("drop", handleDrop, false);
+            fileInput.addEventListener("change", handleFiles, false);
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles({ target: { files } });
+            }
+            function handleFiles(e) {
+                const files = e.target.files;
+                if (files.length) {
+                    const file = files[0];
+                    if (file.type.startsWith("image/")) {
+                        console.log("Processing image:", file.name);
+                    } else {
+                        alert("Please upload an image file.");
+                    }
+                }
+            }
+        </script>
+    </body>
 </html>
