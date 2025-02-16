@@ -22,10 +22,10 @@ import { API_URL, UserContext } from './App';
 function StyleScanner() {
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState('');
-    const [analysisDepth, setAnalysisDepth] = useState(0.5);
+    const [analysisDepth, setAnalysisDepth] = useState(0.7);
     const [detailedAnalysis, setDetailedAnalysis] = useState(false);
     const [scanning, setScanning] = useState(false);
-    const [insights, setInsights] = useState('');
+    const [insights, setInsights] = useState(null);
     const toast = useToast();
     const { user } = useContext(UserContext);
 
@@ -56,6 +56,14 @@ function StyleScanner() {
         setDetailedAnalysis(wantsDetailed);
     };
 
+    const convertToBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+
     const handleGenerateStyleInsights = async (e) => {
         e.preventDefault();
         if (!file) {
@@ -69,16 +77,21 @@ function StyleScanner() {
             return;
         }
         setScanning(true);
-        const formData = new FormData();
-        formData.append('photo', file);
-        formData.append('analysisDepth', analysisDepth);
-        formData.append('detailedAnalysis', detailedAnalysis);
-        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`${API_URL}/api/scan-style`, {
+            const base64Image = await convertToBase64(file);
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${API_URL}/api/generate-insight`, {
                 method: 'POST',
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {})
+                },
+                body: JSON.stringify({
+                    imageSource: base64Image,
+                    stylePreferences: detailedAnalysis ? 'Detailed analysis requested' : '',
+                    model: 'o3-mini',
+                    temperature: analysisDepth
+                })
             });
             if (!response.ok) {
                 if (response.status === 403) {
@@ -88,7 +101,7 @@ function StyleScanner() {
                 throw new Error(errorData.error || 'Failed to scan style');
             }
             const result = await response.json();
-            setInsights(result.insights);
+            setInsights(result);
         } catch (error) {
             toast({
                 title: 'Error',
@@ -176,7 +189,31 @@ function StyleScanner() {
                             <Heading size="md" mb={4} textAlign="center">
                                 Style Insights
                             </Heading>
-                            <Text fontSize="md">{insights}</Text>
+                            {insights.recommendations && (
+                                <Box mb={4}>
+                                    <Text fontSize="md" fontWeight="bold">
+                                        Recommendations:
+                                    </Text>
+                                    <Text fontSize="md">{insights.recommendations}</Text>
+                                </Box>
+                            )}
+                            {insights.benefits && insights.benefits.length > 0 && (
+                                <Box>
+                                    <Text fontSize="md" fontWeight="bold">
+                                        Benefits:
+                                    </Text>
+                                    <VStack align="start" spacing={2} mt={2}>
+                                        {insights.benefits.map((benefit, index) => (
+                                            <Text key={index} fontSize="sm">
+                                                • {benefit}
+                                            </Text>
+                                        ))}
+                                    </VStack>
+                                </Box>
+                            )}
+                            {!insights.recommendations && !insights.benefits && (
+                                <Text fontSize="md">No insights available.</Text>
+                            )}
                         </Box>
                     )}
                 </Box>

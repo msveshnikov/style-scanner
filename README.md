@@ -125,4 +125,4 @@ Core Values:
 
 # TODO
 
--   Insights are suggestions for user (private!)
+- Insights are suggestions for user (private!)

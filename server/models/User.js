@@ -58,6 +58,10 @@ const UserSchema = new mongoose.Schema(
                 type: String
             }
         },
+        preferences: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {}
+        },
         lastAiRequestTime: {
             type: Date
         },
@@ -112,6 +116,14 @@ UserSchema.methods.generateVerificationToken = function () {
     const token = crypto.randomBytes(20).toString('hex');
     this.verificationToken = crypto.createHash('sha256').update(token).digest('hex');
     return token;
+};
+
+UserSchema.methods.toJSON = function () {
+    const obj = this.toObject();
+    delete obj.password;
+    delete obj.resetPasswordToken;
+    delete obj.verificationToken;
+    return obj;
 };
 
 const User = mongoose.model('User', UserSchema);

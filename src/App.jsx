@@ -19,7 +19,7 @@ const Admin = lazy(() => import('./Admin'));
 const Feedback = lazy(() => import('./Feedback'));
 const Docs = lazy(() => import('./Docs'));
 
-export const API_URL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://stylescanner.vip/';
+export const API_URL = import.meta.env.DEV ? 'http://localhost:3000' : 'https://stylescanner.vip';
 export const UserContext = createContext(null);
 
 const theme = extendTheme({

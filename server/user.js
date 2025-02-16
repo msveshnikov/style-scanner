@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
-dotenv.config(true);
+dotenv.config();
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const transporter = nodemailer.createTransport({
@@ -31,11 +31,12 @@ const userRoutes = (app) => {
                 const { email: googleEmail, given_name, family_name } = ticket.getPayload();
                 user = await User.findOne({ email: googleEmail });
                 if (!user) {
+                    const hashedPassword = await bcrypt.hash(Math.random().toString(36), 10);
                     user = new User({
                         email: googleEmail,
                         firstName: given_name,
                         lastName: family_name,
-                        password: bcrypt.hashSync(Math.random().toString(36), 10),
+                        password: hashedPassword,
                         emailVerified: true,
                         subscriptionStatus: 'free'
                     });
@@ -56,27 +57,26 @@ const userRoutes = (app) => {
                     to: email,
                     from: process.env.FROM_EMAIL,
                     subject: 'Welcome to StyleScanner.vip!',
-                    html: `
-                        <html>
-                        <body style="font-family: 'Open Sans', sans-serif; color: #333;">
-                            <div style="max-width:600px; margin: auto; padding:20px; border:1px solid #eee; border-radius:8px; background-color:#fff;">
-                            <h1 style="color: #3498DB;">Welcome to StyleScanner.vip!</h1>
-                            <p>Hi ${firstName},</p>
-                            <p>Thank you for joining StyleScanner.vip – your AI-powered partner for automating your research workflow and instantly generating professional insights.</p>
-                            <p>Please verify your email address to activate your account and start exploring our features:</p>
-                            <a href="${process.env.FRONTEND_URL}/api/auth/verify-email?token=${user.verificationToken}&email=${encodeURIComponent(email)}" style="display:inline-block; padding:10px 20px; margin:10px 0; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Verify Your Email</a>
-                            <p>Once verified, you can dive into dynamic insight customization and AI-driven insights to elevate your research.</p>
-                            <p>If you have any questions, our support team is here to help.</p>
-                            <p>Warm regards,<br>The StyleScanner.vip Team</p>
-                            </div>
-                        </body>
-                        </html>
-          `
+                    html: `<html>
+  <body style="font-family: 'Open Sans', sans-serif; color: #333;">
+    <div style="max-width:600px; margin: auto; padding:20px; border:1px solid #eee; border-radius:8px; background-color:#fff;">
+      <h1 style="color: #3498DB;">Welcome to StyleScanner.vip!</h1>
+      <p>Hi ${firstName},</p>
+      <p>Thank you for joining StyleScanner.vip – your AI-powered partner for elevating your personal style. We are excited to help you instantly generate actionable fashion insights.</p>
+      <p>Please verify your email address to activate your account and start exploring our features:</p>
+      <a href="${process.env.FRONTEND_URL}/api/auth/verify-email?token=${user.verificationToken}&email=${encodeURIComponent(email)}" style="display:inline-block; padding:10px 20px; margin:10px 0; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Verify Your Email</a>
+      <p>Once verified, you can explore dynamic style insights and numerous features to elevate your look.</p>
+      <p>If you have any questions, our support team is here to help.</p>
+      <p>Warm regards,<br>The StyleScanner.vip Team</p>
+    </div>
+  </body>
+</html>`
                 });
             }
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
             res.status(201).json({ token, user: { ...user.toJSON(), password: undefined } });
-        } catch {
+        } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Registration failed' });
         }
     });
@@ -90,7 +90,8 @@ const userRoutes = (app) => {
             if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
             res.json({ token, user: { ...user.toJSON(), password: undefined } });
-        } catch {
+        } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Login failed' });
         }
     });
@@ -100,7 +101,8 @@ const userRoutes = (app) => {
             const user = await User.findById(req.user.id).select('-password');
             if (!user) return res.status(404).json({ error: 'User not found' });
             res.json(user);
-        } catch {
+        } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Failed to fetch profile' });
         }
     });
@@ -115,8 +117,8 @@ const userRoutes = (app) => {
                 { new: true }
             ).select('-password');
             res.json(user);
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Failed to update profile' });
         }
     });
@@ -132,23 +134,21 @@ const userRoutes = (app) => {
                 to: email,
                 from: process.env.FROM_EMAIL,
                 subject: 'Password Reset - StyleScanner.vip',
-                html: `
-          <html>
-            <body style="font-family: 'Open Sans', sans-serif; color: #333;">
-              <div style="max-width:600px; margin: auto; padding:20px; border:1px solid #eee; border-radius:8px; background-color:#fff;">
-                <h1 style="color: #3498DB;">Password Reset Request</h1>
-                <p>Hello,</p>
-                <p>You have requested to reset your password for your StyleScanner.vip account. Please click the button below to proceed:</p>
-                <a href="${process.env.FRONTEND_URL}/reset-password/${resetToken}" style="display:inline-block; padding:10px 20px; margin:10px 0; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Reset Your Password</a>
-                <p>If you did not request this, please ignore this email.</p>
-              </div>
-            </body>
-          </html>
-        `
+                html: `<html>
+  <body style="font-family: 'Open Sans', sans-serif; color: #333;">
+    <div style="max-width:600px; margin: auto; padding:20px; border:1px solid #eee; border-radius:8px; background-color:#fff;">
+      <h1 style="color: #3498DB;">Password Reset Request</h1>
+      <p>Hello,</p>
+      <p>You have requested to reset your password for your StyleScanner.vip account. Please click the button below to proceed:</p>
+      <a href="${process.env.FRONTEND_URL}/reset-password/${resetToken}" style="display:inline-block; padding:10px 20px; margin:10px 0; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Reset Your Password</a>
+      <p>If you did not request this, please ignore this email.</p>
+    </div>
+  </body>
+</html>`
             });
             res.json({ message: 'Password reset email sent' });
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Failed to send reset email' });
         }
     });
@@ -170,8 +170,8 @@ const userRoutes = (app) => {
             user.resetPasswordExpires = undefined;
             await user.save();
             res.json({ message: 'Password reset successful' });
-        } catch (e) {
-            console.error(e);
+        } catch (error) {
+            console.error(error);
             res.status(500).json({ error: 'Password reset failed' });
         }
     });
@@ -180,56 +180,49 @@ const userRoutes = (app) => {
         try {
             const { token, email } = req.query;
             if (!token || !email) {
-                return res.status(400).send(`
-          <html>
-            <body style="font-family: 'Open Sans', sans-serif; color: #333;">
-              <div style="max-width:600px; margin: auto; padding:20px;">
-                <h1 style="color:#E74C3C;">Verification Failed</h1>
-                <p>Invalid verification parameters.</p>
-              </div>
-            </body>
-          </html>
-        `);
+                return res.status(400).send(`<html>
+  <body style="font-family: 'Open Sans', sans-serif; color: #333;">
+    <div style="max-width:600px; margin: auto; padding:20px;">
+      <h1 style="color:#E74C3C;">Verification Failed</h1>
+      <p>Invalid verification parameters.</p>
+    </div>
+  </body>
+</html>`);
             }
             const user = await User.findOne({ email, verificationToken: token });
             if (!user) {
-                return res.status(400).send(`
-          <html>
-            <body style="font-family: 'Open Sans', sans-serif; color: #333;">
-              <div style="max-width:600px; margin: auto; padding:20px;">
-                <h1 style="color:#E74C3C;">Verification Failed</h1>
-                <p>Invalid or expired verification token.</p>
-              </div>
-            </body>
-          </html>
-        `);
+                return res.status(400).send(`<html>
+  <body style="font-family: 'Open Sans', sans-serif; color: #333;">
+    <div style="max-width:600px; margin: auto; padding:20px;">
+      <h1 style="color:#E74C3C;">Verification Failed</h1>
+      <p>Invalid or expired verification token.</p>
+    </div>
+  </body>
+</html>`);
             }
             user.emailVerified = true;
             user.verificationToken = undefined;
             await user.save();
-            res.send(`
-        <html>
-          <body style="font-family: 'Open Sans', sans-serif; background-color:#f4f4f4; color:#333;">
-            <div style="max-width:600px; margin: auto; padding:20px; background-color:#fff; border-radius:8px; text-align:center;">
-              <h1 style="color:#3498DB;">Welcome to StyleScanner.vip!</h1>
-              <p>Your email has been successfully verified.</p>
-              <p>Explore our platform to automate your research workflow and create stunning insights effortlessly.</p>
-              <a href="${process.env.FRONTEND_URL}/insight-creator" style="display:inline-block; padding:10px 20px; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Go to Insight Creator</a>
-            </div>
-          </body>
-        </html>
-      `);
-        } catch {
-            res.status(500).send(`
-        <html>
-          <body style="font-family: 'Open Sans', sans-serif; color:#333;">
-            <div style="max-width:600px; margin: auto; padding:20px;">
-              <h1 style="color:#E74C3C;">Verification Error</h1>
-              <p>Email verification failed.</p>
-            </div>
-          </body>
-        </html>
-      `);
+            res.send(`<html>
+  <body style="font-family: 'Open Sans', sans-serif; background-color:#f4f4f4; color:#333;">
+    <div style="max-width:600px; margin: auto; padding:20px; background-color:#fff; border-radius:8px; text-align:center;">
+      <h1 style="color:#3498DB;">Welcome to StyleScanner.vip!</h1>
+      <p>Your email has been successfully verified.</p>
+      <p>Explore our platform to elevate your personal style with actionable fashion insights.</p>
+      <a href="${process.env.FRONTEND_URL}/insight-creator" style="display:inline-block; padding:10px 20px; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Go to Insight Creator</a>
+    </div>
+  </body>
+</html>`);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send(`<html>
+  <body style="font-family: 'Open Sans', sans-serif; color:#333;">
+    <div style="max-width:600px; margin: auto; padding:20px;">
+      <h1 style="color:#E74C3C;">Verification Error</h1>
+      <p>Email verification failed.</p>
+    </div>
+  </body>
+</html>`);
         }
     });
 };

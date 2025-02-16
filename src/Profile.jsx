@@ -96,7 +96,7 @@ const Profile = () => {
         setInsightsLoading(true);
         (async () => {
             try {
-                const res = await fetch(API_URL + '/api/insights', {
+                const res = await fetch(`${API_URL}/api/myinsights`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (res.ok) {
@@ -313,13 +313,14 @@ const Profile = () => {
                             ) : insights && insights.length > 0 ? (
                                 <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                                     {insights.map((insight) => (
-                                        <Card key={insight.id}>
+                                        <Card key={insight._id}>
                                             <CardBody>
                                                 <Heading size="sm">
                                                     {insight.title || 'Style Insight'}
                                                 </Heading>
                                                 <Text fontSize="sm">
-                                                    {insight.description || 'No details available'}
+                                                    {insight.recommendations ||
+                                                        'No details available'}
                                                 </Text>
                                                 <Text fontSize="xs" color="gray.500">
                                                     {new Date(

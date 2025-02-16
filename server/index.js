@@ -11,6 +11,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
 import { getTextGemini } from './gemini.js';
 import User from './models/User.js';
 import Insight from './models/Insight.js';
@@ -61,6 +62,7 @@ if (process.env.NODE_ENV === 'production') {
 mongoose.connect(process.env.MONGODB_URI, {});
 userRoutes(app);
 adminRoutes(app);
+const upload = multer({ storage: multer.memoryStorage() });
 const generateAIResponse = async (prompt, model, temperature = 0.7) => {
     switch (model) {
         case 'o3-mini':
@@ -89,7 +91,7 @@ export const checkAiLimit = async (req, res, next) => {
             if (user.lastAiRequestTime) {
                 const lastRequest = new Date(user.lastAiRequestTime);
                 if (now.toDateString() === lastRequest.toDateString()) {
-                    if (user.aiRequestCount >= 3) {
+                    if (user.aiRequestCount >= 13) {
                         return res
                             .status(429)
                             .json({ error: 'Daily AI request limit reached, please upgrade' });
@@ -123,7 +125,6 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
         }
         model = model || 'o3-mini';
         temperature = temperature || 0.7;
-        // const user = await User.findById(req.user.id);
         let prompt =
             'Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.';
         if (stylePreferences) {
@@ -154,12 +155,63 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
             styleScore: 0
         });
         await insightRecord.save();
-        res.status(201).json(parsed);
+        res.status(201).json({ insights: parsed });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
     }
 });
+app.post(
+    '/api/scan-style',
+    authenticateToken,
+    checkAiLimit,
+    upload.single('photo'),
+    async (req, res) => {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ error: 'Photo is required' });
+            }
+            const analysisDepth = req.body.analysisDepth ? parseFloat(req.body.analysisDepth) : 0.5;
+            const detailedAnalysis =
+                req.body.detailedAnalysis === 'true' || req.body.detailedAnalysis === true;
+            const imageSource = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+            const model = 'o3-mini';
+            const temperature = 0.7;
+            let prompt =
+                'Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.';
+            prompt += ` Analysis Depth: ${analysisDepth}. Detailed Analysis: ${detailedAnalysis ? 'Yes' : 'No'}.`;
+            prompt += `\nImage Source: ${imageSource}`;
+            const result = await generateAIResponse(prompt, model, temperature);
+            if (!result) {
+                throw new Error('No response from model, please try again later');
+            }
+            let parsed;
+            try {
+                parsed = JSON.parse(extractCodeSnippet(result));
+            } catch (e) {
+                console.error(e);
+                return res
+                    .status(500)
+                    .json({ error: 'Failed to parse AI response as JSON, please try again' });
+            }
+            parsed = await replaceGraphics(parsed, imageSource);
+            const insightRecord = new Insight({
+                title: 'Fashion Insight',
+                photo: imageSource,
+                recommendations: parsed.recommendations || '',
+                userId: req.user.id,
+                benefits: parsed.benefits || [],
+                analysis: parsed,
+                styleScore: 0
+            });
+            await insightRecord.save();
+            res.status(201).json({ insights: parsed });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+);
 app.get('/api/myinsights', authenticateToken, async (req, res) => {
     try {
         const search = req.query.search;
