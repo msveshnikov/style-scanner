@@ -122,3 +122,7 @@ Core Values:
 - Continuous innovation
 - Community engagement
 - Privacy and security focus
+
+# TODO
+
+-   Insights are suggestions for user (private!)
