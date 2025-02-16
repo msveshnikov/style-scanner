@@ -156,7 +156,7 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
             styleScore: 0
         });
         await insightRecord.save();
-        res.status(201).json({ insights: parsed });
+        res.status(201).json(parsed);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });

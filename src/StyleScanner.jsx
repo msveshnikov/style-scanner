@@ -89,8 +89,8 @@ function StyleScanner() {
                 body: JSON.stringify({
                     imageSource: base64Image,
                     stylePreferences: detailedAnalysis ? 'Detailed analysis requested' : '',
-                    model: 'gemini-2.0-flash-thinking-exp-01-21'
-                    // temperature: analysisDepth
+                    model: 'gemini-2.0-flash-thinking-exp-01-21',
+                    temperature: analysisDepth
                 })
             });
             if (!response.ok) {
@@ -101,7 +101,7 @@ function StyleScanner() {
                 throw new Error(errorData.error || 'Failed to scan style');
             }
             const result = await response.json();
-            setInsights(result);
+            setInsights(result.insights);
         } catch (error) {
             toast({
                 title: 'Error',
@@ -117,9 +117,6 @@ function StyleScanner() {
 
     return (
         <Box p={6} maxW="1200px" mx="auto">
-            <Heading textAlign="center" mb={4}>
-                StyleScanner.VIP
-            </Heading>
             <Text textAlign="center" mb={6} fontSize="lg">
                 Scan your style, elevate your look.
             </Text>
@@ -186,34 +183,99 @@ function StyleScanner() {
                     )}
                     {insights && (
                         <Box p={6} borderWidth="1px" borderRadius="lg">
-                            <Heading size="md" mb={4} textAlign="center">
-                                Style Insights
-                            </Heading>
+                            {insights.outfitAnalysis && (
+                                <Box mb={4}>
+                                    <Heading size="md" mb={2} textAlign="center">
+                                        Outfit Analysis
+                                    </Heading>
+                                    {insights.outfitAnalysis.overallStyle && (
+                                        <Text>
+                                            Overall Style: {insights.outfitAnalysis.overallStyle}
+                                        </Text>
+                                    )}
+                                    {insights.outfitAnalysis.fitAssessment && (
+                                        <Text>
+                                            Fit Assessment: {insights.outfitAnalysis.fitAssessment}
+                                        </Text>
+                                    )}
+                                    {insights.outfitAnalysis.colorPalette && (
+                                        <Text>
+                                            Color Palette:{' '}
+                                            {insights.outfitAnalysis.colorPalette.join(', ')}
+                                        </Text>
+                                    )}
+                                    {insights.outfitAnalysis.items &&
+                                        insights.outfitAnalysis.items.length > 0 && (
+                                            <Box mt={2}>
+                                                <Text fontSize="md" fontWeight="bold">
+                                                    Items:
+                                                </Text>
+                                                <VStack align="start" spacing={1} mt={1}>
+                                                    {insights.outfitAnalysis.items.map(
+                                                        (item, index) => (
+                                                            <Text key={index} fontSize="sm">
+                                                                {item.type}: {item.description}
+                                                                {item.fit
+                                                                    ? `. Fit: ${item.fit}`
+                                                                    : ''}
+                                                                {item.condition
+                                                                    ? `. Condition: ${item.condition}`
+                                                                    : ''}
+                                                            </Text>
+                                                        )
+                                                    )}
+                                                </VStack>
+                                            </Box>
+                                        )}
+                                </Box>
+                            )}
+                            {typeof insights.styleScore !== 'undefined' && (
+                                <Box mb={4}>
+                                    <Text fontSize="md" fontWeight="bold">
+                                        Style Score:
+                                    </Text>
+                                    <Text fontSize="md">{insights.styleScore}</Text>
+                                </Box>
+                            )}
                             {insights.recommendations && (
                                 <Box mb={4}>
                                     <Text fontSize="md" fontWeight="bold">
                                         Recommendations:
                                     </Text>
-                                    <Text fontSize="md">{insights.recommendations}</Text>
+                                    {Array.isArray(insights.recommendations) ? (
+                                        <VStack align="start" spacing={2} mt={2}>
+                                            {insights.recommendations.map((rec, index) => (
+                                                <Text key={index} fontSize="sm">
+                                                    • {rec}
+                                                </Text>
+                                            ))}
+                                        </VStack>
+                                    ) : (
+                                        <Text fontSize="md">{insights.recommendations}</Text>
+                                    )}
                                 </Box>
                             )}
-                            {insights.benefits && insights.benefits.length > 0 && (
-                                <Box>
-                                    <Text fontSize="md" fontWeight="bold">
-                                        Benefits:
-                                    </Text>
-                                    <VStack align="start" spacing={2} mt={2}>
-                                        {insights.benefits.map((benefit, index) => (
-                                            <Text key={index} fontSize="sm">
-                                                • {benefit}
-                                            </Text>
-                                        ))}
-                                    </VStack>
-                                </Box>
-                            )}
-                            {!insights.recommendations && !insights.benefits && (
-                                <Text fontSize="md">No insights available.</Text>
-                            )}
+                            {insights.benefits &&
+                                Array.isArray(insights.benefits) &&
+                                insights.benefits.length > 0 && (
+                                    <Box>
+                                        <Text fontSize="md" fontWeight="bold">
+                                            Benefits:
+                                        </Text>
+                                        <VStack align="start" spacing={2} mt={2}>
+                                            {insights.benefits.map((benefit, index) => (
+                                                <Text key={index} fontSize="sm">
+                                                    • {benefit}
+                                                </Text>
+                                            ))}
+                                        </VStack>
+                                    </Box>
+                                )}
+                            {!insights.outfitAnalysis &&
+                                !insights.recommendations &&
+                                !insights.benefits && (
+                                    <Text fontSize="md">No insights available.</Text>
+                                )}
                         </Box>
                     )}
                 </Box>
