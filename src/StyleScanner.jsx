@@ -117,9 +117,6 @@ function StyleScanner() {
 
     return (
         <Box p={6} maxW="1200px" mx="auto">
-            <Text textAlign="center" mb={6} fontSize="lg">
-                Scan your style, elevate your look.
-            </Text>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <Box as="form" onSubmit={handleGenerateStyleInsights}>
                     <VStack spacing={4}>
