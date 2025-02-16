@@ -473,11 +473,11 @@ app.get('/sitemap.xml', async (req, res) => {
             '/docs'
         ];
         let urls = staticRoutes
-            .map((route) => `<url><loc>https://AutoResearch.pro${route}</loc></url>`)
+            .map((route) => `<url><loc>https://StyleScanner.vip${route}</loc></url>`)
             .join('');
         presentations.forEach((p) => {
             if (p.slug) {
-                urls += `<url><loc>https://AutoResearch.pro/presentation/${p.slug}</loc></url>`;
+                urls += `<url><loc>https://StyleScanner.vip/presentation/${p.slug}</loc></url>`;
             }
         });
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

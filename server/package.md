@@ -1,11 +1,11 @@
 # AutoResearch Server Package Documentation
 
 This document provides a comprehensive overview of the configuration and dependencies for the
-backend server of the AutoResearch.pro platform, as defined in the file:  
+backend server of the StyleScanner.vip platform, as defined in the file:  
   server/package.json
 
 AutoResearch Server (named “autoresearch-server”) is the backend component powering
-AutoResearch.pro—an AI-driven research and presentation platform. It leverages modern Node.js
+StyleScanner.vip—an AI-driven research and presentation platform. It leverages modern Node.js
 features (ES modules) and many industry-standard libraries to support API endpoints, authentication,
 AI service integrations, and performance monitoring.
 
@@ -27,7 +27,7 @@ AI service integrations, and performance monitoring.
 ## Overview
 
 The `server/package.json` file is the configuration file for the Node.js backend server of the
-AutoResearch.pro platform. It defines project metadata, external library dependencies, development
+StyleScanner.vip platform. It defines project metadata, external library dependencies, development
 tools, and runtime requirements. Key highlights include:
 
 - **ES Module Support:** The `"type": "module"` flag allows the use of native ECMAScript module
@@ -56,7 +56,7 @@ Below is a detailed description of the main configuration keys in this file:
   The current version of the server. Follow semantic versioning for updates.
 
 - **description:**  
-  `"Backend server for AutoResearch.pro: an AI-powered research and presentation platform"`  
+  `"Backend server for StyleScanner.vip: an AI-powered research and presentation platform"`  
   A brief description explaining the purpose of this server.
 
 - **main:**  
@@ -220,7 +220,7 @@ _Tip:_ You may also integrate process managers like PM2 to manage the production
 The project structure defines several directories:
 
 - **/src:**  
-  Contains front-end code (React components written in JSX) for the client side of AutoResearch.pro.
+  Contains front-end code (React components written in JSX) for the client side of StyleScanner.vip.
 
 - **/server:**  
   Houses backend server code. The `package.json` file in this directory ensures that the backend has
@@ -238,7 +238,7 @@ The project structure defines several directories:
 
 In summary, the `server/package.json` is a crucial file that outlines the backend’s dependencies,
 runtime requirements, and development tools, ensuring stable and efficient operation of the
-server-side component of AutoResearch.pro.
+server-side component of StyleScanner.vip.
 
 ---
 

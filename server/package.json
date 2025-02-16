@@ -1,7 +1,7 @@
 {
     "name": "autoresearch-server",
     "version": "1.0.0",
-    "description": "Backend server for AutoResearch.pro: an AI-powered research and presentation platform",
+    "description": "Backend server for StyleScanner.vip: an AI-powered research and presentation platform",
     "main": "index.js",
     "type": "module",
     "scripts": {

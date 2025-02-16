@@ -33,7 +33,7 @@ db.presentations.insertMany([
             { layout: 'title', content: 'AI-Driven Research' },
             { layout: 'bullet', content: 'Automated Research Aggregation' },
             { layout: 'bullet', content: 'Dynamic Slide Generation' },
-            { layout: 'footer', content: 'Powered by AutoResearch.pro' }
+            { layout: 'footer', content: 'Powered by StyleScanner.vip' }
         ],
         aiSummary:
             'This presentation synthesizes AI-powered research insights, offering dynamic content generation via the PresentationCreator component.',
@@ -49,7 +49,7 @@ db.presentations.insertMany([
                 content:
                     'Explore cutting-edge research and AI integrations that drive modern innovation.'
             },
-            { layout: 'footer', content: 'AutoResearch.pro - From Idea to Impact' }
+            { layout: 'footer', content: 'StyleScanner.vip - From Idea to Impact' }
         ],
         aiSummary:
             'A deep dive into the latest AI research, this presentation exemplifies the intelligent fusion of data, design, and dynamic customization.',

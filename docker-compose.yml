@@ -21,7 +21,7 @@ services:
             - EMAIL=${EMAIL}
             - FROM_EMAIL=${FROM_EMAIL}
             - EMAIL_PASSWORD=${EMAIL_PASSWORD}
-            - FRONTEND_URL=https://AutoResearch.pro
+            - FRONTEND_URL=https://StyleScanner.vip
         depends_on:
             - mongodb
         restart: unless-stopped

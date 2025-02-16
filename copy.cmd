@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 set "REMOTE_USER=ubuntu"
-set "REMOTE_HOST=AutoResearch.pro"
+set "REMOTE_HOST=StyleScanner.vip"
 set "REMOTE_DIR=/home/ubuntu"
 
 echo Starting export of MongoDB collections...
