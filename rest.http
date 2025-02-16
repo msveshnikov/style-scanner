@@ -1,0 +1,9 @@
+GET https://autoresearch.pro/sitemap.xml
+
+###
+ GET https://AutoResearch.pro/presentation/cell-physiology
+###
+GET http://localhost:3000/sitemap.xml
+
+###
+GET   http://localhost:3000/presentation/prague-castle
