@@ -57,14 +57,14 @@ const Terms = () => {
                     </Heading>
                     <Text mb={4}>
                         Our platform employs advanced AI algorithms for data aggregation, research
-                        synthesis, and presentation generation. While we strive for accuracy,
+                        synthesis, and insight generation. While we strive for accuracy,
                         StyleScanner.vip does not warrant that the AI-generated outputs or insights
                         will be error-free or applicable for specific purposes.
                     </Text>
                     <UnorderedList spacing={2} mb={4}>
                         <ListItem>Data Aggregation and Analysis</ListItem>
-                        <ListItem>Instant Presentation Generation</ListItem>
-                        <ListItem>Dynamic Presentation Customization</ListItem>
+                        <ListItem>Instant Insight Generation</ListItem>
+                        <ListItem>Dynamic Insight Customization</ListItem>
                         <ListItem>AI-Driven Insights</ListItem>
                         <ListItem>Automated Research Synthesis</ListItem>
                     </UnorderedList>
@@ -76,10 +76,9 @@ const Terms = () => {
                     </Heading>
                     <Text mb={4}>
                         StyleScanner.vip endeavors to provide accurate and reliable research
-                        insights and presentation content. However, we make no guarantees regarding
-                        the completeness, accuracy, or reliability of the data. Users are
-                        responsible for verifying any critical information obtained from the
-                        platform.
+                        insights and insight content. However, we make no guarantees regarding the
+                        completeness, accuracy, or reliability of the data. Users are responsible
+                        for verifying any critical information obtained from the platform.
                     </Text>
                 </Box>
 
@@ -89,7 +88,7 @@ const Terms = () => {
                     </Heading>
                     <Text mb={4}>
                         StyleScanner.vip offers features such as automated research aggregation,
-                        rapid presentation generation, dynamic slide customization, and AI-powered
+                        rapid insight generation, dynamic slide customization, and AI-powered
                         insights. These features are subject to periodic updates and modifications
                         without prior notice.
                     </Text>

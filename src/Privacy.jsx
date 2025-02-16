@@ -22,7 +22,7 @@ const Privacy = () => {
         analytics: true,
         aiProcessing: true,
         researchData: true,
-        presentationCustomization: true,
+        insightCustomization: true,
         socialFeatures: false
     });
 
@@ -67,7 +67,7 @@ const Privacy = () => {
                     <UnorderedList spacing={2} mb={4}>
                         <ListItem>Aggregated Research Data</ListItem>
                         <ListItem>User Interaction Logs</ListItem>
-                        <ListItem>Presentation Settings</ListItem>
+                        <ListItem>Insight Settings</ListItem>
                         <ListItem>Generated AI Insights</ListItem>
                         <ListItem>User Profile Information</ListItem>
                     </UnorderedList>
@@ -79,7 +79,7 @@ const Privacy = () => {
                     <UnorderedList spacing={2} mb={4}>
                         <ListItem>Natural language processing for research data synthesis</ListItem>
                         <ListItem>Automated insights generation</ListItem>
-                        <ListItem>Dynamic presentation creation algorithms</ListItem>
+                        <ListItem>Dynamic insight creation algorithms</ListItem>
                         <ListItem>Advanced data aggregation techniques</ListItem>
                         <ListItem>Customizable layout and design adjustments</ListItem>
                     </UnorderedList>
@@ -187,13 +187,13 @@ const Privacy = () => {
                             />
                         </FormControl>
                         <FormControl display="flex" alignItems="center">
-                            <FormLabel htmlFor="presentationCustomization" mb="0">
-                                Presentation Customization
+                            <FormLabel htmlFor="insightCustomization" mb="0">
+                                Insight Customization
                             </FormLabel>
                             <Switch
-                                id="presentationCustomization"
-                                isChecked={consentSettings.presentationCustomization}
-                                onChange={() => handleConsentChange('presentationCustomization')}
+                                id="insightCustomization"
+                                isChecked={consentSettings.insightCustomization}
+                                onChange={() => handleConsentChange('insightCustomization')}
                             />
                         </FormControl>
                         <FormControl display="flex" alignItems="center">

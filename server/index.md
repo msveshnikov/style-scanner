@@ -2,8 +2,8 @@ Below is the complete documentation for the file server/index.js. This file is t
 for the backend of the AutoResearch application. It sets up an Express server, configures middleware
 (including CORS, rate limiting, logging, compression, and Prometheus metrics), connects to MongoDB,
 wires up API routes, and integrates with third-party services such as Stripe. The server is
-responsible for generating AI-powered presentations, handling user and admin routes, processing
-feedback, serving static files, and handling webhooks.
+responsible for generating AI-powered insights, handling user and admin routes, processing feedback,
+serving static files, and handling webhooks.
 
 ---
 
@@ -21,14 +21,14 @@ role in the overall project.
 3. [Middleware and Server Configuration](#middleware-and-server-configuration)
 4. [Helper Functions](#helper-functions)
 5. [API Endpoints](#api-endpoints)
-    - [POST /api/generate-presentation](#post-apigenerate-presentation)
-    - [GET /api/presentations](#get-apipresentations)
-    - [GET /api/mypresentations](#get-apimypresentations)
-    - [GET /api/presentations/:identifier](#get-apipresentationsidentifier)
+    - [POST /api/generate-insight](#post-apigenerate-insight)
+    - [GET /api/insights](#get-apiinsights)
+    - [GET /api/myinsights](#get-apimyinsights)
+    - [GET /api/insights/:identifier](#get-apiinsightsidentifier)
     - [POST /api/feedback](#post-apifeedback)
     - [POST /api/stripe-webhook](#post-apistripe-webhook)
     - [GET /sitemap.xml](#get-sitemapxml)
-    - [GET / and /presentation/:slug](#get--and--presentationslug)
+    - [GET / and /insight/:slug](#get--and--insightslug)
     - [Fallback Route](#fallback-route)
 6. [Error and Process Handling](#error-and-process-handling)
 7. [Project Structure](#project-structure)
@@ -41,11 +41,11 @@ role in the overall project.
 The server (in server/index.js) provides the backend services for the AutoResearch application. Its
 main responsibilities are:
 
-- **AI-Power Presentation Creation:** Accepts requests to generate presentations using AI models
-  (e.g., GPT and Gemini models).
+- **AI-Power Insight Creation:** Accepts requests to generate insights using AI models (e.g., GPT
+  and Gemini models).
 - **User Management:** Integrates user routes and subscription-based limitations.
-- **Content Serving:** Serves static assets (from the dist directory), landing pages, and
-  presentation pages with dynamic metadata.
+- **Content Serving:** Serves static assets (from the dist directory), landing pages, and insight
+  pages with dynamic metadata.
 - **Webhook Integration:** Processes Stripe webhook events to update user subscription statuses and
   send relevant analytics events.
 - **Metrics and Logging:** Uses Prometheus metrics (via express-prom-bundle), morgan for logging,
@@ -70,7 +70,7 @@ The server relies on several important libraries and environment variables:
 - **Path/URL:** To set paths for static files and templates.
 - **Imported Modules:**
     - AI provider integrations (getTextGemini, getTextGpt)
-    - Models for User, Presentation, Feedback (in server/models)
+    - Models for User, Insight, Feedback (in server/models)
     - Middleware for authentication (server/middleware/auth.js)
     - Additional modules such as imageService.js and admin/user route modules.
 
@@ -120,7 +120,7 @@ STRIPE_KEY, STRIPE_WH_SECRET, MONGODB_URI, PORT, GA_API_SECRET, among others.
 - **Returns:**  
   A promise that resolves with the AI generated response.
 - **Usage:**  
-  Called internally by the `/api/generate-presentation` endpoint to fetch AI-generated content.
+  Called internally by the `/api/generate-insight` endpoint to fetch AI-generated content.
 
 ---
 
@@ -138,7 +138,7 @@ STRIPE_KEY, STRIPE_WH_SECRET, MONGODB_URI, PORT, GA_API_SECRET, among others.
   the user is not subscribed/trialing) on the same day, returns a 429 error with a message "Daily AI
   request limit reached".
 - **Usage:**  
-  Attached to the route for generating presentations to prevent abuse.
+  Attached to the route for generating insights to prevent abuse.
 
 ---
 
@@ -163,38 +163,38 @@ STRIPE_KEY, STRIPE_WH_SECRET, MONGODB_URI, PORT, GA_API_SECRET, among others.
 - **Returns:**  
   A lowercase, trimmed text with spaces replaced by hyphens and special characters removed.
 - **Usage:**  
-  Used to generate a unique slug for each presentation.
+  Used to generate a unique slug for each insight.
 
 ---
 
 ## API Endpoints
 
-### POST /api/generate-presentation
+### POST /api/generate-insight
 
 - **Description:**  
-  Generates a PowerPoint-like presentation in JSON format using an AI model. The content is
-  generated based on a topic provided by the client along with parameters like the number of slides
-  and model type.
+  Generates a PowerPoint-like insight in JSON format using an AI model. The content is generated
+  based on a topic provided by the client along with parameters like the number of slides and model
+  type.
 - **Middlewares:**  
   • authenticateToken – ensures the request is authenticated.  
   • checkAiLimit – enforces daily usage limits.
-- **Input (JSON Payload):** • topic (String): The topic for the presentation (limited to the first
-  1000 characters).  
+- **Input (JSON Payload):** • topic (String): The topic for the insight (limited to the first 1000
+  characters).  
   • numSlides (Number, Optional): The number of slides (default is 10).  
   • model (String, Optional): The AI model identifier (default is 'o3-mini').  
   • temperature (Number, Optional): The generation temperature (default is 0.7).
 - **Process:**
-    1. Reads a presentation schema from presentationSchema.json for reference.
+    1. Reads a insight schema from insightSchema.json for reference.
     2. Constructs a prompt incorporating the schema and topic details.
-    3. Calls generateAIResponse to obtain the presentation content.
+    3. Calls generateAIResponse to obtain the insight content.
     4. Parses the response by extracting a JSON code snippet and converting it to an object.
     5. Replaces graphics by calling the replaceGraphics utility.
-    6. Determines if the presentation should be marked as private based on the user’s subscription
+    6. Determines if the insight should be marked as private based on the user’s subscription
        status.
-    7. Saves the new presentation in MongoDB.
+    7. Saves the new insight in MongoDB.
 - **Response:**  
-  Returns the parsed presentation JSON on success, or a 500 error with an error message if parsing
-  or generation fails.
+  Returns the parsed insight JSON on success, or a 500 error with an error message if parsing or
+  generation fails.
 - **Example Request Payload:**
 
     { "topic": "Future of Renewable Energy", "numSlides": 12, "model": "o3-mini", "temperature": 0.6
@@ -202,39 +202,39 @@ STRIPE_KEY, STRIPE_WH_SECRET, MONGODB_URI, PORT, GA_API_SECRET, among others.
 
 ---
 
-### GET /api/presentations
+### GET /api/insights
 
 - **Description:**  
-  Retrieves a list of public presentations.
+  Retrieves a list of public insights.
 - **Process:**  
-  Finds presentations that are either explicitly public (isPrivate: false) or do not have the
-  isPrivate flag, then sorts them in descending order of creation.
+  Finds insights that are either explicitly public (isPrivate: false) or do not have the isPrivate
+  flag, then sorts them in descending order of creation.
 - **Response:**  
-  Returns a limited presentation object (id, title, description, model, first slide title, slug) in
-  JSON format.
+  Returns a limited insight object (id, title, description, model, first slide title, slug) in JSON
+  format.
 
 ---
 
-### GET /api/mypresentations
+### GET /api/myinsights
 
 - **Description:**  
-  Returns presentations that belong to the authenticated user.
+  Returns insights that belong to the authenticated user.
 - **Middlewares:**  
-  • authenticateToken – ensures that only the logged-in user’s presentations are fetched.
+  • authenticateToken – ensures that only the logged-in user’s insights are fetched.
 - **Response:**  
-  Similar to /api/presentations, returns limited fields for each presentation owned by the user.
+  Similar to /api/insights, returns limited fields for each insight owned by the user.
 
 ---
 
-### GET /api/presentations/:identifier
+### GET /api/insights/:identifier
 
 - **Description:**  
-  Retrieves a presentation by its identifier. The identifier can be a MongoDB ObjectId or a slug.
+  Retrieves a insight by its identifier. The identifier can be a MongoDB ObjectId or a slug.
 - **Process:**
     1. Checks if the identifier is a valid ObjectId; if yes, fetches by id.
-    2. If not found, it attempts to find the presentation by slug.
+    2. If not found, it attempts to find the insight by slug.
 - **Response:**  
-  Returns the full presentation details or a 404 error if the presentation is not found.
+  Returns the full insight details or a 404 error if the insight is not found.
 
 ---
 
@@ -274,23 +274,23 @@ STRIPE_KEY, STRIPE_WH_SECRET, MONGODB_URI, PORT, GA_API_SECRET, among others.
 
 - **Description:**  
   Generates an XML sitemap for SEO. It includes a URL for the landing page and one URL for each
-  presentation (if the presentation has a slug).
+  insight (if the insight has a slug).
 - **Response:**  
   Returns an XML document with Content-Type set to application/xml.
 
 ---
 
-### GET / and /presentation/:slug
+### GET / and /insight/:slug
 
 - **GET /**  
   Serves the landing page (landing.html) from the dist directory.
-- **GET /presentation/:slug**  
-  Serves a presentation page:
+- **GET /insight/:slug**  
+  Serves a insight page:
     - Reads the default index.html.
-    - Attempts to load a presentation by ObjectId or slug.
-    - If a public presentation is found, dynamically injects presentation metadata (title,
-      description, slide list) into a full HTML response.
-    - If not found or if the presentation is private, the unmodified index.html is served.
+    - Attempts to load a insight by ObjectId or slug.
+    - If a public insight is found, dynamically injects insight metadata (title, description, slide
+      list) into a full HTML response.
+    - If not found or if the insight is private, the unmodified index.html is served.
 - **Response:**  
   Returns HTML content appropriate to the route.
 
@@ -329,7 +329,7 @@ Below is a summary of how server/index.js fits in the overall project structure:
 - **src/** – Contains the frontend code written in React (various JSX files).
 - **server/** – Contains all backend code:
     - index.js (this file): Main server configuration and API endpoints.
-    - Models (User.js, Presentation.js, Feedback.js): Define MongoDB schemas.
+    - Models (User.js, Insight.js, Feedback.js): Define MongoDB schemas.
     - Middleware (auth.js): Contains authentication logic.
     - Additional integration files: openai.js, gemini.js, imageService.js, etc.
     - Route files: user.js (user routes), admin.js (admin routes).
@@ -345,12 +345,12 @@ serves as the backend gateway for the AutoResearch application.
 
 ## Usage Examples
 
-### Example 1: Generate a Presentation
+### Example 1: Generate a Insight
 
-Send a POST request to /api/generate-presentation (requires authentication):
+Send a POST request to /api/generate-insight (requires authentication):
 
 Request URL:  
-https://yourdomain.com/api/generate-presentation
+https://yourdomain.com/api/generate-insight
 
 Request Headers: • Authorization: Bearer <access_token>  
 • Content-Type: application/json
@@ -359,20 +359,20 @@ Request Body: { "topic": "Innovations in Artificial Intelligence", "numSlides": 
 "o3-mini", "temperature": 0.65 }
 
 Successful Response (HTTP 201): { "title": "Innovations in Artificial Intelligence", "description":
-"A concise presentation on the latest tech innovations in AI.", "version": "v1", "theme": "modern",
+"A concise insight on the latest tech innovations in AI.", "version": "v1", "theme": "modern",
 "slides": [ { "title": "Slide 1", "content": "Introduction" }, { "title": "Slide 2", "content":
 "Overview" } // More slides... ] }
 
-### Example 2: Retrieve Public Presentations
+### Example 2: Retrieve Public Insights
 
-Send a GET request to /api/presentations:
+Send a GET request to /api/insights:
 
 Request URL:  
-https://yourdomain.com/api/presentations
+https://yourdomain.com/api/insights
 
 Successful Response (HTTP 200): [ { "_id": "64a1b2c3d4e5f6... ", "title": "Innovations in AI",
-"description": "An engaging presentation on AI advancements", "model": "o3-mini", "firstSlideTitle":
-"Introduction", "slug": "innovations-in-ai" }, // Other presentations... ]
+"description": "An engaging insight on AI advancements", "model": "o3-mini", "firstSlideTitle":
+"Introduction", "slug": "innovations-in-ai" }, // Other insights... ]
 
 ### Example 3: Stripe Webhook Event
 

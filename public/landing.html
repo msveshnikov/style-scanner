@@ -358,14 +358,14 @@
         <header>
             <nav class="nav" role="navigation" aria-label="Primary Navigation">
                 <div class="nav-content">
-                    <a href="#" class="logo">
+                    <!-- <a href="#" class="logo">
                         <svg class="logo-icon" viewBox="0 0 24 24">
                             <path
                                 d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
                             ></path>
                         </svg>
                         StyleScanner.VIP
-                    </a>
+                    </a> -->
                     <div class="nav-links">
                         <a href="#benefits">Benefits</a>
                         <a href="#how-it-works">How It Works</a>
@@ -497,74 +497,5 @@
                 <p>&copy; 2025 StyleScanner.VIP - Your Personal Style Assistant</p>
             </div>
         </footer>
-        <script>
-            const nav = document.querySelector('.nav');
-            let lastScroll = 0;
-            window.addEventListener('scroll', () => {
-                const currentScroll = window.pageYOffset;
-                if (currentScroll > lastScroll && currentScroll > 100) {
-                    nav.classList.add('hidden');
-                } else {
-                    nav.classList.remove('hidden');
-                }
-                lastScroll = currentScroll;
-            });
-            const dropZone = document.getElementById('dropZone');
-            const fileInput = document.getElementById('fileInput');
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
-                dropZone.addEventListener(eventName, preventDefaults, false);
-            });
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            ['dragenter', 'dragover'].forEach((eventName) => {
-                dropZone.addEventListener(
-                    eventName,
-                    () => dropZone.classList.add('drag-over'),
-                    false
-                );
-            });
-            ['dragleave', 'drop'].forEach((eventName) => {
-                dropZone.addEventListener(
-                    eventName,
-                    () => dropZone.classList.remove('drag-over'),
-                    false
-                );
-            });
-            dropZone.addEventListener('drop', handleDrop, false);
-            fileInput.addEventListener('change', handleFiles, false);
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                handleFiles({ target: { files } });
-            }
-            function handleFiles(e) {
-                const files = e.target.files;
-                if (files.length) {
-                    const file = files[0];
-                    if (file.type.startsWith('image/')) {
-                        console.log('Processing image:', file.name);
-                    } else {
-                        alert('Please upload an image file.');
-                    }
-                }
-            }
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker
-                        .register('/sw.js')
-                        .then((registration) => {
-                            console.log(
-                                'Service Worker registered with scope:',
-                                registration.scope
-                            );
-                        })
-                        .catch((error) => {
-                            console.log('Service Worker registration failed:', error);
-                        });
-                });
-            }
-        </script>
     </body>
 </html>

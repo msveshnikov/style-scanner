@@ -3,8 +3,8 @@
 This document provides a comprehensive overview of the functionality implemented in the file
 `server/imageService.js`. This module is responsible for integrating with external APIs (Unsplash,
 Google Images, and OpenAI) to retrieve and process images based on a textual prompt. It also
-provides a utility to translate text when needed and to replace placeholder graphics in a
-presentation with actual image URLs.
+provides a utility to translate text when needed and to replace placeholder graphics in a insight
+with actual image URLs.
 
 ---
 
@@ -33,10 +33,10 @@ The `imageService.js` module plays a central role on the server-side by providin
 - Retrieve images based on a search term from two image sources:
     - Unsplash (via their public API)
     - Google Images (by scraping HTML)
-- Replace graphic elements in a presentation object with fetched image URLs.
+- Replace graphic elements in a insight object with fetched image URLs.
 
-This module is designed to be part of a larger project that includes a UI for creating presentations
-(e.g., the `PresentationCreator.jsx` component in the `src` folder) and several other server-side
+This module is designed to be part of a larger project that includes a UI for creating insights
+(e.g., the `InsightCreator.jsx` component in the `src` folder) and several other server-side
 modules.
 
 ---
@@ -208,27 +208,27 @@ getGoogleImage('sunset').then((url) => {
 ### replaceGraphics
 
 **Description:**  
-Processes a presentation object by iterating through its slides and elements. For each element of
-type `'graphic'` or `'image'`, this function fetches a new image URL (using `getUnsplashImage`) and
-replaces the element's content with this URL. This is useful for dynamically updating presentations
-with high-quality imagery.
+Processes a insight object by iterating through its slides and elements. For each element of type
+`'graphic'` or `'image'`, this function fetches a new image URL (using `getUnsplashImage`) and
+replaces the element's content with this URL. This is useful for dynamically updating insights with
+high-quality imagery.
 
 **Parameters:**
 
-- `presentation` (object): The presentation object. It should contain a property `slides`, which is
-  an array. Each slide should have an `elements` array.
+- `insight` (object): The insight object. It should contain a property `slides`, which is an array.
+  Each slide should have an `elements` array.
 - `language` (string): The language code for the text content. This is used to determine if
   translation is necessary before querying for images.
 
 **Return Value:**  
-A Promise that resolves to the updated presentation object with replaced graphics.
+A Promise that resolves to the updated insight object with replaced graphics.
 
 **Example:**
 
 ```js
 import { replaceGraphics } from './server/imageService.js';
 
-const presentation = {
+const insight = {
     slides: [
         {
             elements: [
@@ -242,8 +242,8 @@ const presentation = {
     ]
 };
 
-replaceGraphics(presentation, 'en').then((updatedPresentation) => {
-    console.log(updatedPresentation);
+replaceGraphics(insight, 'en').then((updatedInsight) => {
+    console.log(updatedInsight);
     // The graphic and image elements will have their content replaced with new image URLs.
 });
 ```
@@ -275,22 +275,22 @@ async function fetchImage() {
 fetchImage();
 ```
 
-### Example: Updating Presentation Graphics
+### Example: Updating Insight Graphics
 
-If you have a presentation object that contains placeholder text for images, you can update it as
+If you have a insight object that contains placeholder text for images, you can update it as
 follows:
 
 ```js
 import { replaceGraphics } from './server/imageService.js';
 
-async function updatePresentationGraphics(presentation, language) {
-    const updatedPresentation = await replaceGraphics(presentation, language);
-    // Now the presentation elements of type 'graphic' or 'image' contain actual image URLs.
-    console.log('Updated Presentation:', updatedPresentation);
+async function updateInsightGraphics(insight, language) {
+    const updatedInsight = await replaceGraphics(insight, language);
+    // Now the insight elements of type 'graphic' or 'image' contain actual image URLs.
+    console.log('Updated Insight:', updatedInsight);
 }
 
-// Example presentation object:
-const presentation = {
+// Example insight object:
+const insight = {
     slides: [
         {
             elements: [
@@ -301,7 +301,7 @@ const presentation = {
     ]
 };
 
-updatePresentationGraphics(presentation, 'en');
+updateInsightGraphics(insight, 'en');
 ```
 
 ---
@@ -312,11 +312,11 @@ Within the overall project structure, this file is located in the `server` direc
 modules (e.g., `claude.js`, `gemini.js`, and the main `index.js`). Its responsibilities include:
 
 - Serving image-related requests from the front-end (e.g., via a REST API).
-- Being used as a utility by presentation processing modules (as seen with `replaceGraphics`).
+- Being used as a utility by insight processing modules (as seen with `replaceGraphics`).
 - Providing a fallback mechanism (via `getGoogleImage`) in case one image provider fails.
 
-The related front-end components (found in the `src` folder) such as `PresentationCreator.jsx` are
-likely to trigger calls to these functions when a user creates or updates a presentation.
+The related front-end components (found in the `src` folder) such as `InsightCreator.jsx` are likely
+to trigger calls to these functions when a user creates or updates a insight.
 
 ---
 
@@ -345,7 +345,7 @@ likely to trigger calls to these functions when a user creates or updates a pres
 
 The `server/imageService.js` module is a key component of the project's backend, enabling dynamic
 image retrieval and processing. It interfaces with multiple external services to ensure that
-presentations are enriched with high-quality imagery. Be sure to configure the necessary environment
+insights are enriched with high-quality imagery. Be sure to configure the necessary environment
 variables and handle API errors gracefully when integrating this module into your application.
 
 Happy coding!

@@ -36,7 +36,7 @@ export const BottomNavigationBar = () => (
         </Box>
         <Box
             as={Link}
-            to="/presentation"
+            to="/insight"
             p={2}
             display="flex"
             flexDirection="column"

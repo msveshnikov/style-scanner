@@ -5,9 +5,9 @@ backend server of the StyleScanner.vip platform, as defined in the file:
   server/package.json
 
 AutoResearch Server (named “autoresearch-server”) is the backend component powering
-StyleScanner.vip—an AI-driven research and presentation platform. It leverages modern Node.js
-features (ES modules) and many industry-standard libraries to support API endpoints, authentication,
-AI service integrations, and performance monitoring.
+StyleScanner.vip—an AI-driven research and insight platform. It leverages modern Node.js features
+(ES modules) and many industry-standard libraries to support API endpoints, authentication, AI
+service integrations, and performance monitoring.
 
 ---
 
@@ -56,7 +56,7 @@ Below is a detailed description of the main configuration keys in this file:
   The current version of the server. Follow semantic versioning for updates.
 
 - **description:**  
-  `"Backend server for StyleScanner.vip: an AI-powered research and presentation platform"`  
+  `"Backend server for StyleScanner.vip: an AI-powered research and insight platform"`  
   A brief description explaining the purpose of this server.
 
 - **main:**  
@@ -226,8 +226,8 @@ The project structure defines several directories:
   Houses backend server code. The `package.json` file in this directory ensures that the backend has
   its own isolated dependency tree and configuration. Other files (e.g., `admin.js`, `claude.js`,
   `gemini.js`, `index.js`) complement the server functionality. The `models` subdirectory contains
-  Mongoose models (Feedback, Presentation, User) and the `middleware` folder includes custom
-  middleware (like authentication in `auth.js`).
+  Mongoose models (Feedback, Insight, User) and the `middleware` folder includes custom middleware
+  (like authentication in `auth.js`).
 
 - **/public:**  
   Serves static assets such as HTML files and configuration texts (robots.txt, ads.txt).

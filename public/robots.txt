@@ -1,5 +1,5 @@
 User-agent: *
 Disallow: /profile
 Allow: /$
-Allow: /presentation$
+Allow: /insight$
 Allow: /manifest.json

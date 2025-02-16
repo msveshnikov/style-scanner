@@ -93,9 +93,9 @@ export const getGoogleImage = async (prompt) => {
     }
 };
 
-export const replaceGraphics = async (presentation, imageSource) => {
-    if (presentation && Array.isArray(presentation.slides)) {
-        for (const slide of presentation.slides) {
+export const replaceGraphics = async (insight, imageSource) => {
+    if (insight && Array.isArray(insight.slides)) {
+        for (const slide of insight.slides) {
             if (Array.isArray(slide.elements)) {
                 for (const element of slide.elements) {
                     if (element.type === 'graphic' || element.type === 'image') {
@@ -111,5 +111,5 @@ export const replaceGraphics = async (presentation, imageSource) => {
             }
         }
     }
-    return presentation;
+    return insight;
 };

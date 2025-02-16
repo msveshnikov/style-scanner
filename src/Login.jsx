@@ -59,7 +59,7 @@ const Login = () => {
                 duration: 3000,
                 isClosable: true
             });
-            window.location.href = '/presentation';
+            window.location.href = '/insight';
         } catch (error) {
             toast({
                 title: 'Login Error',

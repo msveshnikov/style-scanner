@@ -17,7 +17,7 @@ db.users.updateOne(
 );
 
 use('style');
-db.presentations.updateOne(
+db.insights.updateOne(
     { _id: ObjectId('67aa7d724aa8d8bc71712608') },
     {
         $set: {
@@ -26,9 +26,9 @@ db.presentations.updateOne(
     }
 );
 
-db.presentations.insertMany([
+db.insights.insertMany([
     {
-        title: 'AI-Driven Research Presentation',
+        title: 'AI-Driven Research Insight',
         slides: [
             { layout: 'title', content: 'AI-Driven Research' },
             { layout: 'bullet', content: 'Automated Research Aggregation' },
@@ -36,7 +36,7 @@ db.presentations.insertMany([
             { layout: 'footer', content: 'Powered by StyleScanner.vip' }
         ],
         aiSummary:
-            'This presentation synthesizes AI-powered research insights, offering dynamic content generation via the PresentationCreator component.',
+            'This insight synthesizes AI-powered research insights, offering dynamic content generation via the InsightCreator component.',
         customizationOptions: { theme: 'default', layout: 'standard' },
         createdAt: new Date()
     },
@@ -52,14 +52,14 @@ db.presentations.insertMany([
             { layout: 'footer', content: 'StyleScanner.vip - From Idea to Impact' }
         ],
         aiSummary:
-            'A deep dive into the latest AI research, this presentation exemplifies the intelligent fusion of data, design, and dynamic customization.',
+            'A deep dive into the latest AI research, this insight exemplifies the intelligent fusion of data, design, and dynamic customization.',
         customizationOptions: { theme: 'modern', layout: 'creative' },
         createdAt: new Date()
     }
 ]);
 
 db.researchInsights.insertOne({
-    presentationTitle: 'AI-Driven Research Presentation',
+    insightTitle: 'AI-Driven Research Insight',
     insights: [
         { topic: 'Market Trends', analysis: 'Growing impact of AI in market dynamics.' },
         {
@@ -70,10 +70,10 @@ db.researchInsights.insertOne({
     createdAt: new Date()
 });
 
-db.presentations.createIndex({ createdAt: 1 });
+db.insights.createIndex({ createdAt: 1 });
 db.researchInsights.createIndex({ createdAt: 1 });
 
-db.createView('presentationAnalytics', 'presentations', [
+db.createView('insightAnalytics', 'insights', [
     {
         $project: {
             title: 1,

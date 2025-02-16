@@ -62,10 +62,10 @@ const userRoutes = (app) => {
                             <div style="max-width:600px; margin: auto; padding:20px; border:1px solid #eee; border-radius:8px; background-color:#fff;">
                             <h1 style="color: #3498DB;">Welcome to StyleScanner.vip!</h1>
                             <p>Hi ${firstName},</p>
-                            <p>Thank you for joining StyleScanner.vip – your AI-powered partner for automating your research workflow and instantly generating professional presentations.</p>
+                            <p>Thank you for joining StyleScanner.vip – your AI-powered partner for automating your research workflow and instantly generating professional insights.</p>
                             <p>Please verify your email address to activate your account and start exploring our features:</p>
                             <a href="${process.env.FRONTEND_URL}/api/auth/verify-email?token=${user.verificationToken}&email=${encodeURIComponent(email)}" style="display:inline-block; padding:10px 20px; margin:10px 0; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Verify Your Email</a>
-                            <p>Once verified, you can dive into dynamic presentation customization and AI-driven insights to elevate your research.</p>
+                            <p>Once verified, you can dive into dynamic insight customization and AI-driven insights to elevate your research.</p>
                             <p>If you have any questions, our support team is here to help.</p>
                             <p>Warm regards,<br>The StyleScanner.vip Team</p>
                             </div>
@@ -107,11 +107,11 @@ const userRoutes = (app) => {
 
     app.put('/api/profile', authenticateToken, async (req, res) => {
         try {
-            const { firstName, lastName, preferences, presentationSettings, researchPreferences } =
+            const { firstName, lastName, preferences, insightSettings, researchPreferences } =
                 req.body;
             const user = await User.findByIdAndUpdate(
                 req.user.id,
-                { firstName, lastName, preferences, presentationSettings, researchPreferences },
+                { firstName, lastName, preferences, insightSettings, researchPreferences },
                 { new: true }
             ).select('-password');
             res.json(user);
@@ -213,8 +213,8 @@ const userRoutes = (app) => {
             <div style="max-width:600px; margin: auto; padding:20px; background-color:#fff; border-radius:8px; text-align:center;">
               <h1 style="color:#3498DB;">Welcome to StyleScanner.vip!</h1>
               <p>Your email has been successfully verified.</p>
-              <p>Explore our platform to automate your research workflow and create stunning presentations effortlessly.</p>
-              <a href="${process.env.FRONTEND_URL}/presentation-creator" style="display:inline-block; padding:10px 20px; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Go to Presentation Creator</a>
+              <p>Explore our platform to automate your research workflow and create stunning insights effortlessly.</p>
+              <a href="${process.env.FRONTEND_URL}/insight-creator" style="display:inline-block; padding:10px 20px; background-color:#3498DB; color:#fff; text-decoration:none; border-radius:4px;">Go to Insight Creator</a>
             </div>
           </body>
         </html>

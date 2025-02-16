@@ -26,7 +26,7 @@ React and Chakra UI.
 ## Overview
 
 The **Admin** component provides an administrative dashboard interface for managing key entities
-within the application such as users, presentations, and user feedback. The dashboard presents
+within the application such as users, insights, and user feedback. The dashboard presents
 statistical overviews using charts, detailed tables for each entity, and actions for updating or
 deleting records. It utilizes several Chakra UI components for layout and style as well as Chart.js
 (via react-chartjs-2) to render growth charts.
@@ -44,7 +44,7 @@ project-root/
 │   ├── Admin.jsx         <-- (This file)
 │   ├── App.jsx
 │   ├── Feedback.jsx
-│   ├── Presentation.jsx
+│   ├── Insight.jsx
 │   └── ...other components
 ├── server/
 │   ├── admin.js
@@ -61,7 +61,7 @@ project-root/
 - **Chakra UI**: Provides the UI components (Container, Table, Card, Tabs, AlertDialog, etc.) and
   utility hooks (useToast).
 - **Chart.js & react-chartjs-2**: Used to render interactive charts (line charts for displaying user
-  and presentation growth).
+  and insight growth).
 - **API_URL Constant**: Imported from `App.jsx`, used for constructing API endpoint URLs.
 
 ---
@@ -71,16 +71,16 @@ project-root/
 The **Admin** component is the default export of the file and acts as the main administrative
 dashboard. It is designed to:
 
-- Fetch and display statistical data (dashboard metrics, user and presentation growth).
-- Render tables for managing users, presentations, and feedback.
+- Fetch and display statistical data (dashboard metrics, user and insight growth).
+- Render tables for managing users, insights, and feedback.
 - Allow administrative actions such as updating a user’s subscription status and deleting items.
 - Provide a refresh mechanism to re-fetch data.
 
 ### State Variables
 
-- **stats**: Object holding dashboard statistics, user growth data, and presentation statistics.
+- **stats**: Object holding dashboard statistics, user growth data, and insight statistics.
 - **users**: Array of user objects.
-- **presentations**: Array of presentation objects.
+- **insights**: Array of insight objects.
 - **feedbacks**: Array of feedback objects.
 - **isDeleteAlertOpen**: Boolean flag to control the display of the deletion confirmation dialog.
 - **itemToDelete**: Object that stores the `id` and `type` of the item that is pending deletion.
@@ -95,13 +95,13 @@ dashboard. It is designed to:
 
 - **Purpose**:  
   Fetches all necessary data for the dashboard from multiple API endpoints concurrently. This
-  includes dashboard statistics, user data, presentations, and feedback.
+  includes dashboard statistics, user data, insights, and feedback.
 
 - **Implementation Details**:
 
     - Reads the authorization token from `localStorage`.
     - Uses the `Promise.all` method to perform concurrent API calls.
-    - Updates state variables: `stats`, `users`, `presentations`, and `feedbacks`.
+    - Updates state variables: `stats`, `users`, `insights`, and `feedbacks`.
     - Displays a toast (via Chakra UI’s `useToast`) on errors.
     - Toggles the `isLoading` state correctly on start and completion.
 
@@ -121,8 +121,8 @@ dashboard. It is designed to:
 ### handleDelete
 
 - **Purpose**:  
-  Deletes an item (user, presentation, or feedback) from the system using a DELETE API endpoint
-  based on the current `itemToDelete` state.
+  Deletes an item (user, insight, or feedback) from the system using a DELETE API endpoint based on
+  the current `itemToDelete` state.
 
 - **Implementation Details**:
 
@@ -173,19 +173,19 @@ dashboard. It is designed to:
 
 - **Purpose**:  
   Renders the "Overview" tab content which includes statistics cards and line charts for user growth
-  and presentation growth.
+  and insight growth.
 
 - **Implementation Details**:
 
     - Uses Chakra UI components (e.g., `StatGroup`, `SimpleGrid`, `Card`) to display aggregated
       metrics.
     - Processes keys of `stats.stats` to create individual cards.
-    - Renders two line charts (if data is available): one for user growth and one for presentation
+    - Renders two line charts (if data is available): one for user growth and one for insight
       growth.
     - Configures charts with dataset labels, data points, and styling options.
 
 - **Parameters**:  
-  No parameters; uses the component’s state (`stats` and `presentations`).
+  No parameters; uses the component’s state (`stats` and `insights`).
 
 - **Return Value**:  
   Returns a JSX element that represents the entire overview tab content.
@@ -213,7 +213,7 @@ dashboard. It is designed to:
         - **Overview**: Shows general statistics and growth charts.
         - **Users**: Displays a table of user data. Includes subscription management controls and
           delete actions.
-        - **Presentations**: Displays a table of presentations with delete actions.
+        - **Insights**: Displays a table of insights with delete actions.
         - **Feedback**: Displays a table of user feedback with type badges and delete actions.
 
 4. **Alert Dialog**:
@@ -262,8 +262,8 @@ In this example, navigating to `/admin` will render the Admin Dashboard.
 
 ## Future Improvements
 
-- **Pagination and Filtering**: Enhance tables (Users, Presentations, Feedback) to support
-  pagination, searching, and sorting.
+- **Pagination and Filtering**: Enhance tables (Users, Insights, Feedback) to support pagination,
+  searching, and sorting.
 - **Enhanced Error Handling**: Consider more granular error responses and UI feedback for network
   errors.
 - **Optimistic UI Updates**: Implement optimistic updates to improve user experience on subscription

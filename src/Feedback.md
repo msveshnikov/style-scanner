@@ -54,9 +54,9 @@ project-root/
 │   ├── Login.jsx
 │   ├── main.jsx
 │   ├── Navbar.jsx
-│   ├── Presentation.jsx
-│   ├── PresentationCreator.jsx
-│   ├── PresentationList.jsx
+│   ├── Insight.jsx
+│   ├── InsightCreator.jsx
+│   ├── InsightList.jsx
 │   ├── Privacy.jsx
 │   ├── Profile.jsx
 │   ├── Reset.jsx
@@ -70,11 +70,11 @@ project-root/
 │   ├── index.js
 │   ├── openai.js
 │   ├── package.json
-│   ├── presentationSchema.json
+│   ├── insightSchema.json
 │   ├── user.js
 │   └── models/
 │       ├── Feedback.js   <-- Related backend model
-│       ├── Presentation.js
+│       ├── Insight.js
 │       └── User.js
 │       └── middleware/
 │           └── auth.js

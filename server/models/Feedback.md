@@ -125,7 +125,7 @@ Feedback model resides in the directory:
 server/
   ├── models/
   │    ├── Feedback.js
-  │    ├── Presentation.js
+  │    ├── Insight.js
   │    └── User.js
   ├── middleware/
   │    └── auth.js

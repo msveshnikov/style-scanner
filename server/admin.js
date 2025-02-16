@@ -19,14 +19,14 @@ const adminRoutes = (app) => {
                 totalUsers,
                 premiumUsers,
                 trialingUsers,
-                totalPresentations,
+                totalInsights,
                 userGrowth,
-                presentationGrowth
+                insightGrowth
             ] = await Promise.all([
                 User.countDocuments(),
                 User.countDocuments({ subscriptionStatus: 'active' }),
                 User.countDocuments({ subscriptionStatus: 'trialing' }),
-                Presentation.countDocuments(),
+                Insight.countDocuments(),
                 User.aggregate([
                     {
                         $group: {
@@ -37,7 +37,7 @@ const adminRoutes = (app) => {
                     { $sort: { _id: 1 } },
                     { $limit: 30 }
                 ]),
-                Presentation.aggregate([
+                Insight.aggregate([
                     {
                         $group: {
                             _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
@@ -58,9 +58,9 @@ const adminRoutes = (app) => {
                     conversionRate
                 },
                 userGrowth,
-                presentationsStats: {
-                    totalPresentations,
-                    presentationGrowth
+                insightsStats: {
+                    totalInsights,
+                    insightGrowth
                 }
             });
         } catch (error) {
@@ -81,39 +81,34 @@ const adminRoutes = (app) => {
         }
     });
 
-    app.get('/api/admin/presentations', authenticateToken, isAdmin, async (req, res) => {
+    app.get('/api/admin/insights', authenticateToken, isAdmin, async (req, res) => {
         try {
-            const presentations = await Presentation.find()
+            const insights = await Insight.find()
                 .populate('userId', 'email')
                 .sort({ createdAt: -1 });
-            res.json(presentations);
+            res.json(insights);
         } catch (error) {
-            console.error('Admin presentations fetch error:', error);
+            console.error('Admin insights fetch error:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     });
 
-    app.get(
-        '/api/admin/presentations-model-stats',
-        authenticateToken,
-        isAdmin,
-        async (req, res) => {
-            try {
-                const modelStats = await Presentation.aggregate([
-                    {
-                        $group: {
-                            _id: '$model',
-                            count: { $sum: 1 }
-                        }
+    app.get('/api/admin/insights-model-stats', authenticateToken, isAdmin, async (req, res) => {
+        try {
+            const modelStats = await Insight.aggregate([
+                {
+                    $group: {
+                        _id: '$model',
+                        count: { $sum: 1 }
                     }
-                ]);
-                res.json(modelStats);
-            } catch (error) {
-                console.error('Admin presentation model stats error:', error);
-                res.status(500).json({ error: 'Internal server error' });
-            }
+                }
+            ]);
+            res.json(modelStats);
+        } catch (error) {
+            console.error('Admin insight model stats error:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
-    );
+    });
 
     app.delete('/api/admin/users/:id', authenticateToken, isAdmin, async (req, res) => {
         try {
@@ -121,7 +116,7 @@ const adminRoutes = (app) => {
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
             }
-            await Promise.all([Presentation.deleteMany({ userId: req.params.id })]);
+            await Promise.all([Insight.deleteMany({ userId: req.params.id })]);
             res.json({ message: 'User and associated data deleted successfully' });
         } catch (error) {
             console.error('Admin user delete error:', error);
@@ -142,15 +137,15 @@ const adminRoutes = (app) => {
         }
     });
 
-    app.delete('/api/admin/presentations/:id', authenticateToken, isAdmin, async (req, res) => {
+    app.delete('/api/admin/insights/:id', authenticateToken, isAdmin, async (req, res) => {
         try {
-            const presentation = await Presentation.findByIdAndDelete(req.params.id);
-            if (!presentation) {
-                return res.status(404).json({ error: 'Presentation not found' });
+            const insight = await Insight.findByIdAndDelete(req.params.id);
+            if (!insight) {
+                return res.status(404).json({ error: 'Insight not found' });
             }
-            res.json({ message: 'Presentation deleted successfully' });
+            res.json({ message: 'Insight deleted successfully' });
         } catch (error) {
-            console.error('Admin presentation delete error:', error);
+            console.error('Admin insight delete error:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     });
@@ -183,29 +178,24 @@ const adminRoutes = (app) => {
         }
     });
 
-    app.put(
-        '/api/admin/presentations/:id/privacy',
-        authenticateToken,
-        isAdmin,
-        async (req, res) => {
-            try {
-                const { isPrivate } = req.body;
-                if (typeof isPrivate !== 'boolean') {
-                    return res.status(400).json({ error: 'Invalid private status' });
-                }
-                const presentation = await Presentation.findById(req.params.id);
-                if (!presentation) {
-                    return res.status(404).json({ error: 'Presentation not found' });
-                }
-                presentation['isPrivate'] = isPrivate;
-                await presentation.save();
-                res.json({ message: 'Presentation privacy status updated successfully' });
-            } catch (error) {
-                console.error('Admin presentation privacy update error:', error);
-                res.status(500).json({ error: 'Internal server error' });
+    app.put('/api/admin/insights/:id/privacy', authenticateToken, isAdmin, async (req, res) => {
+        try {
+            const { isPrivate } = req.body;
+            if (typeof isPrivate !== 'boolean') {
+                return res.status(400).json({ error: 'Invalid private status' });
             }
+            const insight = await Insight.findById(req.params.id);
+            if (!insight) {
+                return res.status(404).json({ error: 'Insight not found' });
+            }
+            insight['isPrivate'] = isPrivate;
+            await insight.save();
+            res.json({ message: 'Insight privacy status updated successfully' });
+        } catch (error) {
+            console.error('Admin insight privacy update error:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
-    );
+    });
 };
 
 export default adminRoutes;

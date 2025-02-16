@@ -50,7 +50,7 @@ const UserSchema = new mongoose.Schema(
                 type: String
             }
         },
-        presentationSettings: {
+        insightSettings: {
             slideLayout: {
                 type: String
             },

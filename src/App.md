@@ -30,8 +30,8 @@ overall application environment by incorporating:
 - **React Router**: Manages routing and navigation for the application.
 - **React Icons**: Supplies icon components for use in the navigation bar.
 - **Application Routes/components**: Establishes navigation between the landing page (`Landing`),
-  presentation page (`PresentationCreator`), and placeholder pages for future features (_Insights_
-  and _Management_).
+  insight page (`InsightCreator`), and placeholder pages for future features (_Insights_ and
+  _Management_).
 - **Responsive Navigation Bar**: A fixed bottom navigation bar that provides quick links to various
   sections of the application.
 
@@ -49,8 +49,7 @@ The file imports several libraries and components:
     - `FiActivity`, `FiBarChart2`, `FiUsers`, `FiUser`: For iconography in the navigation bar.
 - **Local components**
     - `Landing`: The landing page component imported from './Landing'.
-    - `PresentationCreator`: The presentation creation component imported from
-      './PresentationCreator'.
+    - `InsightCreator`: The insight creation component imported from './InsightCreator'.
 
 ---
 
@@ -162,14 +161,14 @@ const NavigationBar = () => (
         </Box>
         <Box
             as={Link}
-            to="/presentation"
+            to="/insight"
             p={2}
             display="flex"
             flexDirection="column"
             alignItems="center"
         >
             <Icon as={FiBarChart2} boxSize={5} />
-            <Box fontSize="xs">Presentation</Box>
+            <Box fontSize="xs">Insight</Box>
         </Box>
         <Box
             as={Link}
@@ -202,7 +201,7 @@ const NavigationBar = () => (
   includes four links:
 
     - Research
-    - Presentation
+    - Insight
     - Insights
     - Management
 
@@ -227,7 +226,7 @@ function App() {
                 <Box pb="50px">
                     <Routes>
                         <Route path="/" element={<Landing />} />
-                        <Route path="/presentation" element={<PresentationCreator />} />
+                        <Route path="/insight" element={<InsightCreator />} />
                         <Route path="/insights" element={<Insights />} />
                         <Route path="/management" element={<Management />} />
                         <Route path="*" element={<Navigate to="/" replace />} />
@@ -250,7 +249,7 @@ export default App;
     - **Router (BrowserRouter):** Manages the client-side routing.
     - **Routes:** Defines application routes with the following mapping:
         - `/`: Renders the `Landing` component.
-        - `/presentation`: Renders the `PresentationCreator` component.
+        - `/insight`: Renders the `InsightCreator` component.
         - `/insights`: Renders the `Insights` placeholder.
         - `/management`: Renders the `Management` placeholder.
         - Any undefined route (`*`) redirects to the home page (`/`).
@@ -314,15 +313,15 @@ The overall project structure is as follows:
 │   ├── App.jsx                <-- Main application file (this file)
 │   ├── Landing.jsx            <-- Landing page component
 │   ├── main.jsx               <-- Entry point where App is rendered
-│   └── PresentationCreator.jsx <-- Component for creating presentations
+│   └── InsightCreator.jsx <-- Component for creating insights
 ├── server
 │   ├── claude.js
 │   ├── gemini.js
 │   ├── index.js
 │   ├── package.json
-│   ├── presentationSchema.json
+│   ├── insightSchema.json
 │   └── models
-│       ├── Presentation.js
+│       ├── Insight.js
 │       └── User.js
 ├── public
 │   ├── ads.txt

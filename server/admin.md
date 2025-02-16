@@ -9,8 +9,8 @@ and its role within the overall project structure.
 
 ## Overview
 
-The `server/admin.js` module defines a set of administrative endpoints for managing users,
-presentations, and feedbacks in the application. The routes are registered by the exported function
+The `server/admin.js` module defines a set of administrative endpoints for managing users, insights,
+and feedbacks in the application. The routes are registered by the exported function
 `adminRoutes(app)`, which accepts an Express application instance.
 
 Key characteristics:
@@ -20,7 +20,7 @@ Key characteristics:
   administrators can access these endpoints.
 - **Database Models:** It interacts with three main Mongoose models:
     - **User** (`./models/User.js`)
-    - **Presentation** (`./models/Presentation.js`)
+    - **Insight** (`./models/Insight.js`)
     - **Feedback** (`./models/Feedback.js`)
 - **Error Handling:** If a database or operational error occurs, the route returns a 500 status code
   with a JSON error message. Specific resource checks (e.g., not found) return a 404 status code.
@@ -88,7 +88,7 @@ curl -X GET http://localhost:3000/api/admin/users \
 
 **Description:**  
 Provides various aggregated statistics for the dashboard, including user counts, subscription
-conversions, and growth metrics for users and presentations over the last 30 days.
+conversions, and growth metrics for users and insights over the last 30 days.
 
 **Middlewares:**
 
@@ -101,9 +101,9 @@ conversions, and growth metrics for users and presentations over the last 30 day
     - **totalUsers:** Total number of users.
     - **premiumUsers:** Count of users with `subscriptionStatus: 'active'`.
     - **trialingUsers:** Count of users with `subscriptionStatus: 'trialing'`.
-    - **totalPresentations:** Total number of presentations.
+    - **totalInsights:** Total number of insights.
     - **userGrowth:** Aggregation data grouped by creation date for users.
-    - **presentationGrowth:** Aggregation data grouped by creation date for presentations.
+    - **insightGrowth:** Aggregation data grouped by creation date for insights.
 - Converts the conversion rate (premiumUsers/totalUsers) into a percentage, formatted to two
   decimals.
 
@@ -123,9 +123,9 @@ conversions, and growth metrics for users and presentations over the last 30 day
         { "_id": "2023-09-02", "count": 8 },
         ...
       ],
-      "presentationsStats": {
-        "totalPresentations": 200,
-        "presentationGrowth": [
+      "insightsStats": {
+        "totalInsights": 200,
+        "insightGrowth": [
           { "_id": "2023-09-01", "count": 10 },
           { "_id": "2023-09-02", "count": 15 },
           ...
@@ -177,11 +177,11 @@ curl -X GET http://localhost:3000/api/admin/feedbacks \
 
 ---
 
-### 4. GET /api/admin/presentations
+### 4. GET /api/admin/insights
 
 **Description:**  
-Retrieves all presentations. Each presentation includes the associated user’s email via the Mongoose
-populate feature.
+Retrieves all insights. Each insight includes the associated user’s email via the Mongoose populate
+feature.
 
 **Middlewares:**
 
@@ -190,18 +190,18 @@ populate feature.
 
 **Route Handler Details:**
 
-- Uses `Presentation.find()` and populates the `userId` field (email only).
+- Uses `Insight.find()` and populates the `userId` field (email only).
 - Sorted by creation date (newest first).
 
 **Response:**
 
-- On success: Returns a JSON array of presentation objects.
+- On success: Returns a JSON array of insight objects.
 - On error: Returns status 500 with an error message.
 
 **Usage Example:**
 
 ```bash
-curl -X GET http://localhost:3000/api/admin/presentations \
+curl -X GET http://localhost:3000/api/admin/insights \
   -H "Authorization: Bearer <your_admin_token>"
 ```
 
@@ -210,8 +210,8 @@ curl -X GET http://localhost:3000/api/admin/presentations \
 ### 5. DELETE /api/admin/users/:id
 
 **Description:**  
-Deletes a user specified by the `id` parameter. Additionally, deletes all presentations associated
-with that user.
+Deletes a user specified by the `id` parameter. Additionally, deletes all insights associated with
+that user.
 
 **Middlewares:**
 
@@ -222,7 +222,7 @@ with that user.
 
 - Uses `User.findByIdAndDelete(req.params.id)` to remove the user.
 - If no user is found, returns a 404 error.
-- Deletes the associated presentations via `Presentation.deleteMany({ userId: req.params.id })`.
+- Deletes the associated insights via `Insight.deleteMany({ userId: req.params.id })`.
 
 **Response:**
 
@@ -275,10 +275,10 @@ curl -X DELETE http://localhost:3000/api/admin/feedbacks/FEEDBACK_ID \
 
 ---
 
-### 7. DELETE /api/admin/presentations/:id
+### 7. DELETE /api/admin/insights/:id
 
 **Description:**  
-Deletes a presentation specified by the `id` parameter.
+Deletes a insight specified by the `id` parameter.
 
 **Middlewares:**
 
@@ -287,14 +287,14 @@ Deletes a presentation specified by the `id` parameter.
 
 **Route Handler Details:**
 
-- Uses `Presentation.findByIdAndDelete(req.params.id)`.
-- Returns a 404 status if the presentation is not found.
+- Uses `Insight.findByIdAndDelete(req.params.id)`.
+- Returns a 404 status if the insight is not found.
 
 **Response:**
 
 - On success: Returns:
     ```json
-    { "message": "Presentation deleted successfully" }
+    { "message": "Insight deleted successfully" }
     ```
 - On resource not found: Returns status 404.
 - On error: Returns a 500 status JSON.
@@ -302,7 +302,7 @@ Deletes a presentation specified by the `id` parameter.
 **Usage Example:**
 
 ```bash
-curl -X DELETE http://localhost:3000/api/admin/presentations/PRESENTATION_ID \
+curl -X DELETE http://localhost:3000/api/admin/insights/INSIGHT_ID \
   -H "Authorization: Bearer <your_admin_token>"
 ```
 
@@ -406,8 +406,8 @@ app.listen(PORT, () => {
 The `server/admin.js` file is central to administration activities in the application. It provides
 secure endpoints to:
 
-- Retrieve users, feedbacks, presentations, and dashboard statistics.
-- Remove users (with cascade deletion for associated data), presentations, and feedbacks.
+- Retrieve users, feedbacks, insights, and dashboard statistics.
+- Remove users (with cascade deletion for associated data), insights, and feedbacks.
 - Update user subscription statuses with proper validation.
 
 This module is essential for both the backend administrative operations and the integration with the

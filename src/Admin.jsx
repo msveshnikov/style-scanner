@@ -68,9 +68,9 @@ ChartJS.register(
 const Admin = () => {
     const toast = useToast();
     const cancelRef = useRef();
-    const [stats, setStats] = useState({ stats: {}, userGrowth: [], presentationsStats: {} });
+    const [stats, setStats] = useState({ stats: {}, userGrowth: [], insightsStats: {} });
     const [users, setUsers] = useState([]);
-    const [presentations, setPresentations] = useState([]);
+    const [insights, setInsights] = useState([]);
     const [feedbacks, setFeedbacks] = useState([]);
     const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState({ id: null, type: null });
@@ -81,29 +81,29 @@ const Admin = () => {
         try {
             setIsLoading(true);
             const token = localStorage.getItem('token');
-            const [dashboardRes, usersRes, presentationsRes, feedbacksRes] = await Promise.all([
+            const [dashboardRes, usersRes, insightsRes, feedbacksRes] = await Promise.all([
                 fetch(`${API_URL}/api/admin/dashboard`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
                 fetch(`${API_URL}/api/admin/users`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
-                fetch(`${API_URL}/api/admin/presentations`, {
+                fetch(`${API_URL}/api/admin/insights`, {
                     headers: { Authorization: `Bearer ${token}` }
                 }),
                 fetch(`${API_URL}/api/admin/feedbacks`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             ]);
-            const [dashboardData, usersData, presentationsData, feedbacksData] = await Promise.all([
+            const [dashboardData, usersData, insightsData, feedbacksData] = await Promise.all([
                 dashboardRes.json(),
                 usersRes.json(),
-                presentationsRes.json(),
+                insightsRes.json(),
                 feedbacksRes.json()
             ]);
             setStats(dashboardData);
             setUsers(usersData);
-            setPresentations(presentationsData);
+            setInsights(insightsData);
             setFeedbacks(feedbacksData);
         } catch {
             toast({
@@ -195,38 +195,35 @@ const Admin = () => {
     );
 
     const handlePrivacyChange = useCallback(
-        async (presentationId, newPrivacy) => {
+        async (insightId, newPrivacy) => {
             try {
                 setIsLoading(true);
                 const token = localStorage.getItem('token');
-                const response = await fetch(
-                    `${API_URL}/api/admin/presentations/${presentationId}/privacy`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ isPrivate: newPrivacy })
-                    }
-                );
+                const response = await fetch(`${API_URL}/api/admin/insights/${insightId}/privacy`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ isPrivate: newPrivacy })
+                });
                 if (!response.ok) throw new Error();
                 toast({
                     title: 'Success',
-                    description: 'Presentation privacy updated successfully.',
+                    description: 'Insight privacy updated successfully.',
                     status: 'success',
                     duration: 3000,
                     isClosable: true
                 });
-                setPresentations((prevPresentations) =>
-                    prevPresentations.map((p) =>
-                        p._id === presentationId ? { ...p, isPrivate: newPrivacy } : p
+                setInsights((prevInsights) =>
+                    prevInsights.map((p) =>
+                        p._id === insightId ? { ...p, isPrivate: newPrivacy } : p
                     )
                 );
             } catch {
                 toast({
                     title: 'Error',
-                    description: 'Failed to update presentation privacy.',
+                    description: 'Failed to update insight privacy.',
                     status: 'error',
                     duration: 3000,
                     isClosable: true
@@ -240,7 +237,7 @@ const Admin = () => {
 
     const renderOverviewTab = useCallback(() => {
         const modelCounts = {};
-        presentations.forEach((p) => {
+        insights.forEach((p) => {
             const key = p.model || 'Unknown';
             modelCounts[key] = (modelCounts[key] || 0) + 1;
         });
@@ -305,19 +302,15 @@ const Admin = () => {
                         />
                     )}
                 </Box>
-                {stats.presentationsStats?.presentationGrowth?.length > 0 && (
+                {stats.insightsStats?.insightGrowth?.length > 0 && (
                     <Box w="full" h="400px" p={4}>
                         <Line
                             data={{
-                                labels: stats.presentationsStats.presentationGrowth.map(
-                                    (d) => d._id
-                                ),
+                                labels: stats.insightsStats.insightGrowth.map((d) => d._id),
                                 datasets: [
                                     {
-                                        label: 'Presentation Growth',
-                                        data: stats.presentationsStats.presentationGrowth.map(
-                                            (d) => d.count
-                                        ),
+                                        label: 'Insight Growth',
+                                        data: stats.insightsStats.insightGrowth.map((d) => d.count),
                                         borderColor: '#3498DB',
                                         tension: 0.4
                                     }
@@ -347,15 +340,15 @@ const Admin = () => {
                     <Card>
                         <CardBody>
                             <Stat>
-                                <StatLabel>Presentations</StatLabel>
-                                <StatNumber>{presentations.length}</StatNumber>
+                                <StatLabel>Insights</StatLabel>
+                                <StatNumber>{insights.length}</StatNumber>
                             </Stat>
                         </CardBody>
                     </Card>
                 </SimpleGrid>
             </VStack>
         );
-    }, [stats, presentations]);
+    }, [stats, insights]);
 
     if (isLoading && !users.length) {
         return (
@@ -453,19 +446,19 @@ const Admin = () => {
                                 </Tr>
                             </Thead>
                             <Tbody>
-                                {presentations.map((presentation) => (
-                                    <Tr key={presentation._id}>
-                                        <Td>{presentation.title}</Td>
-                                        <Td>{presentation.userId?.email || 'N/A'}</Td>
-                                        <Td>{new Date(presentation.createdAt).toLocaleString()}</Td>
+                                {insights.map((insight) => (
+                                    <Tr key={insight._id}>
+                                        <Td>{insight.title}</Td>
+                                        <Td>{insight.userId?.email || 'N/A'}</Td>
+                                        <Td>{new Date(insight.createdAt).toLocaleString()}</Td>
                                         <Td>
                                             <Switch
                                                 size="sm"
                                                 colorScheme="blue"
-                                                isChecked={presentation.isPrivate}
+                                                isChecked={insight.isPrivate}
                                                 onChange={(e) =>
                                                     handlePrivacyChange(
-                                                        presentation._id,
+                                                        insight._id,
                                                         e.target.checked
                                                     )
                                                 }
@@ -478,8 +471,8 @@ const Admin = () => {
                                                 leftIcon={<DeleteIcon />}
                                                 onClick={() => {
                                                     setItemToDelete({
-                                                        id: presentation._id,
-                                                        type: 'presentations'
+                                                        id: insight._id,
+                                                        type: 'insights'
                                                     });
                                                     setIsDeleteAlertOpen(true);
                                                 }}

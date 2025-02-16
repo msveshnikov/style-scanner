@@ -13,6 +13,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { getTextGemini } from './gemini.js';
 import User from './models/User.js';
+import Insight from './models/Insight.js';
 import { replaceGraphics } from './imageService.js';
 import { getTextGpt } from './openai.js';
 import userRoutes from './user.js';
@@ -114,16 +115,6 @@ const extractCodeSnippet = (text) => {
     const match = text.match(codeBlockRegex);
     return match ? match[1] : text;
 };
-const slugify = (text) => {
-    return text
-        .toString()
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, '-')
-        .replace(/[^\w-]+/g, '')
-        .replace(/--+/g, '-');
-};
-
 app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, res) => {
     try {
         let { imageSource, stylePreferences, model, temperature } = req.body;
@@ -132,8 +123,9 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
         }
         model = model || 'o3-mini';
         temperature = temperature || 0.7;
-        const user = await User.findById(req.user.id);
-        let prompt = `Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.`;
+        // const user = await User.findById(req.user.id);
+        let prompt =
+            'Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.';
         if (stylePreferences) {
             prompt += ` User style preferences: ${stylePreferences}.`;
         }
@@ -152,23 +144,14 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
                 .json({ error: 'Failed to parse AI response as JSON, please try again' });
         }
         parsed = await replaceGraphics(parsed, imageSource);
-        const isPrivate =
-            user.subscriptionStatus === 'active' || user.subscriptionStatus === 'trialing';
         const insightRecord = new Insight({
-            title: 'Style Scan Result',
-            description: parsed.outfitAnalysis || '',
-            version: parsed.version || '1.0',
-            model,
-            theme: '',
-            slides: [
-                {
-                    title: 'Outfit Analysis',
-                    content: parsed
-                }
-            ],
-            slug: slugify('Style Scan Result ' + Date.now()),
+            title: 'Fashion Insight',
+            photo: imageSource,
+            recommendations: parsed.recommendations || '',
             userId: req.user.id,
-            isPrivate
+            benefits: parsed.benefits || [],
+            analysis: parsed,
+            styleScore: 0
         });
         await insightRecord.save();
         res.status(201).json(parsed);
@@ -177,7 +160,6 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
         res.status(500).json({ error: error.message });
     }
 });
-
 app.get('/api/myinsights', authenticateToken, async (req, res) => {
     try {
         const search = req.query.search;
@@ -189,7 +171,8 @@ app.get('/api/myinsights', authenticateToken, async (req, res) => {
                     {
                         $or: [
                             { title: { $regex: search, $options: 'i' } },
-                            { description: { $regex: search, $options: 'i' } }
+                            { recommendations: { $regex: search, $options: 'i' } },
+                            { 'analysis.outfitAnalysis': { $regex: search, $options: 'i' } }
                         ]
                     }
                 ]
@@ -199,11 +182,13 @@ app.get('/api/myinsights', authenticateToken, async (req, res) => {
         const limitedInsights = insights.map((insight) => ({
             _id: insight._id,
             title: insight.title,
-            description: insight.description,
-            model: insight.model,
-            firstInsightTitle:
-                insight.slides && insight.slides.length > 0 ? insight.slides[0].title : null,
-            slug: insight.slug
+            photo: insight.photo,
+            recommendations: insight.recommendations,
+            benefits: insight.benefits,
+            analysis: insight.analysis,
+            styleScore: insight.styleScore,
+            createdAt: insight.createdAt,
+            updatedAt: insight.updatedAt
         }));
         res.status(200).json(limitedInsights);
     } catch (error) {
@@ -211,16 +196,12 @@ app.get('/api/myinsights', authenticateToken, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
 app.get('/api/insights/:identifier', async (req, res) => {
     try {
         const { identifier } = req.params;
         let insight = null;
         if (mongoose.Types.ObjectId.isValid(identifier)) {
             insight = await Insight.findById(identifier);
-        }
-        if (!insight) {
-            insight = await Insight.findOne({ slug: identifier });
         }
         if (!insight) return res.status(404).json({ error: 'Insight not found' });
         res.status(200).json(insight);
@@ -346,8 +327,6 @@ app.get('/sitemap.xml', async (req, res) => {
             '/',
             '/research',
             '/insights',
-            '/Insight',
-            '/insights',
             '/privacy',
             '/terms',
             '/login',
@@ -362,9 +341,7 @@ app.get('/sitemap.xml', async (req, res) => {
             .map((route) => `<url><loc>https://StyleScanner.vip${route}</loc></url>`)
             .join('');
         insights.forEach((p) => {
-            if (p.slug) {
-                urls += `<url><loc>https://StyleScanner.vip/insight/${p.slug}</loc></url>`;
-            }
+            urls += `<url><loc>https://StyleScanner.vip/insight/${p._id}</loc></url>`;
         });
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

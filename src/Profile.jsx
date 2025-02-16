@@ -57,7 +57,7 @@ const Profile = () => {
                     firstName: user?.firstName,
                     lastName: user?.lastName,
                     researchPreferences: user?.researchPreferences,
-                    presentationSettings: user?.presentationSettings,
+                    insightSettings: user?.insightSettings,
                     preferences: user?.preferences
                 })
             });
@@ -212,15 +212,15 @@ const Profile = () => {
                                 </SimpleGrid>
                             </VStack>
                             <VStack spacing={6} align="stretch" mt={8}>
-                                <Heading size="md">Presentation Settings</Heading>
+                                <Heading size="md">Insight Settings</Heading>
                                 <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
                                     <FormControl>
                                         <FormLabel>Default Slide Layout</FormLabel>
                                         <Select
-                                            value={user?.presentationSettings?.slideLayout || ''}
+                                            value={user?.insightSettings?.slideLayout || ''}
                                             onChange={(e) =>
                                                 handleChange(
-                                                    'presentationSettings',
+                                                    'insightSettings',
                                                     'slideLayout',
                                                     e.target.value
                                                 )
@@ -236,10 +236,10 @@ const Profile = () => {
                                     <FormControl>
                                         <FormLabel>Theme</FormLabel>
                                         <Select
-                                            value={user?.presentationSettings?.theme || ''}
+                                            value={user?.insightSettings?.theme || ''}
                                             onChange={(e) =>
                                                 handleChange(
-                                                    'presentationSettings',
+                                                    'insightSettings',
                                                     'theme',
                                                     e.target.value
                                                 )

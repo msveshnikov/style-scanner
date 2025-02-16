@@ -80,7 +80,7 @@ function App() {
                                                 element={<StyleScanner />}
                                             />
                                             <Route
-                                                path="/presentation"
+                                                path="/insight"
                                                 element={<Navigate to="/stylescanner" replace />}
                                             />
                                             <Route path="/privacy" element={<Privacy />} />

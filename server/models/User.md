@@ -23,7 +23,7 @@ information in the application, leveraging Mongoose for MongoDB object modeling.
 
 The file `server/models/User.js` defines the schema for user information, including authentication
 details, personal profile fields, subscription details, preferences for the application, and
-additional settings related to research and presentations. This schema is created using Mongoose, a
+additional settings related to research and insights. This schema is created using Mongoose, a
 popular ODM (Object Data Modeling) library for MongoDB in Node.js. Once the schema is defined, a
 Mongoose model is instantiated, which is then used throughout the server to interact with the
 MongoDB database (e.g., creating, reading, updating, and deleting user data).
@@ -166,7 +166,7 @@ The model contains several nested objects to handle grouped settings and prefere
     - _Description:_ Contains user preferences for research areas, preferred data sources, and the
       level of AI assistance.
 
-3. **presentationSettings**
+3. **insightSettings**
     - _Fields:_
         - **slideLayout**
             - _Type:_ String
@@ -176,8 +176,8 @@ The model contains several nested objects to handle grouped settings and prefere
             - _Type:_ String
             - _Enum:_ ['', 'light', 'dark', 'auto']
             - _Default:_ ''
-    - _Description:_ Manages settings for creating presentations, including slide layout type and
-      presentation theme.
+    - _Description:_ Manages settings for creating insights, including slide layout type and insight
+      theme.
 
 ---
 
@@ -240,7 +240,7 @@ The project structure indicates that this file is part of the server-side logic 
 - **API Endpoints & Controllers:** Files such as `server/index.js` or other route handlers (e.g., in
   middleware files like `server/middleware/auth.js`) likely import the User model to manage
   authentication, profile updates, and other user functionalities.
-- **Related Models:** Alongside `User.js`, there are models for `Feedback` and `Presentation` that
+- **Related Models:** Alongside `User.js`, there are models for `Feedback` and `Insight` that
   collectively form the core data models for the backend.
 - **Client Integration:** While the client-side code (located in the `src` directory) handles the
   user interface, it communicates with the server API which utilizes this User model to fetch and
