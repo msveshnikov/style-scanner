@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import {
     Box,
     Button,
@@ -16,7 +16,8 @@ import {
     SimpleGrid,
     Stack,
     Badge,
-    Link
+    Link,
+    Spinner
 } from '@chakra-ui/react';
 import { API_URL, UserContext } from './App';
 
@@ -24,6 +25,8 @@ const Profile = () => {
     const { user, setUser } = useContext(UserContext);
     const toast = useToast();
     const [isLoading, setIsLoading] = useState(false);
+    const [insights, setInsights] = useState([]);
+    const [insightsLoading, setInsightsLoading] = useState(false);
 
     const handleChange = (section, field, value) => {
         setUser((prev) => ({
@@ -45,7 +48,6 @@ const Profile = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
-
         try {
             const response = await fetch(API_URL + '/api/profile', {
                 method: 'PUT',
@@ -87,6 +89,39 @@ const Profile = () => {
             setIsLoading(false);
         }
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!user || !token) return;
+        setInsightsLoading(true);
+        (async () => {
+            try {
+                const res = await fetch(API_URL + '/api/insights', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    setInsights(data);
+                } else {
+                    toast({
+                        title: 'Error',
+                        description: 'Failed to load style insights',
+                        status: 'error',
+                        duration: 3000
+                    });
+                }
+            } catch {
+                toast({
+                    title: 'Error',
+                    description: 'Failed to load style insights',
+                    status: 'error',
+                    duration: 3000
+                });
+            } finally {
+                setInsightsLoading(false);
+            }
+        })();
+    }, [user, toast]);
 
     return (
         <Container maxW="container.lg" py={8}>
@@ -258,7 +293,6 @@ const Profile = () => {
                                     </FormControl>
                                 </SimpleGrid>
                             </VStack>
-
                             <Box mt={8}>
                                 <Button
                                     type="submit"
@@ -270,6 +304,42 @@ const Profile = () => {
                                 </Button>
                             </Box>
                         </form>
+                        <VStack spacing={6} align="stretch" mt={8}>
+                            <Heading size="md">Insight History</Heading>
+                            {insightsLoading ? (
+                                <Box textAlign="center">
+                                    <Spinner />
+                                </Box>
+                            ) : insights && insights.length > 0 ? (
+                                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+                                    {insights.map((insight) => (
+                                        <Card key={insight.id}>
+                                            <CardBody>
+                                                <Heading size="sm">
+                                                    {insight.title || 'Style Insight'}
+                                                </Heading>
+                                                <Text fontSize="sm">
+                                                    {insight.description || 'No details available'}
+                                                </Text>
+                                                <Text fontSize="xs" color="gray.500">
+                                                    {new Date(
+                                                        insight.createdAt
+                                                    ).toLocaleDateString()}
+                                                </Text>
+                                            </CardBody>
+                                        </Card>
+                                    ))}
+                                </SimpleGrid>
+                            ) : (
+                                <Text>
+                                    No style insights available yet. Upload your outfit photo to get
+                                    started.
+                                </Text>
+                            )}
+                            <Link href="/StyleScanner" style={{ textDecoration: 'none' }}>
+                                <Button colorScheme="blue">Analyze New Outfit</Button>
+                            </Link>
+                        </VStack>
                     </VStack>
                 </CardBody>
             </Card>

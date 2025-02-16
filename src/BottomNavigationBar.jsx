@@ -34,14 +34,7 @@ export const BottomNavigationBar = () => (
             <Icon as={FiHome} boxSize={5} />
             <Text fontSize="xs">Home</Text>
         </Box>
-        <Box
-            as={Link}
-            to="/insight"
-            p={2}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-        >
+        <Box as={Link} to="/scan" p={2} display="flex" flexDirection="column" alignItems="center">
             <Icon as={FiCamera} boxSize={5} />
             <Text fontSize="xs">Scan</Text>
         </Box>

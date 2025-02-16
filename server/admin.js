@@ -1,6 +1,7 @@
 import { authenticateToken, isAdmin } from './middleware/auth.js';
 import User from './models/User.js';
 import Feedback from './models/Feedback.js';
+import Insight from './models/Insight.js';
 
 const adminRoutes = (app) => {
     app.get('/api/admin/users', authenticateToken, isAdmin, async (req, res) => {

@@ -12,6 +12,7 @@ import Forgot from './Forgot';
 import Reset from './Reset';
 import Profile from './Profile';
 import { BottomNavigationBar } from './BottomNavigationBar';
+import Insights from './Insights';
 
 const StyleScanner = lazy(() => import('./StyleScanner'));
 const Admin = lazy(() => import('./Admin'));
@@ -75,14 +76,8 @@ function App() {
                                         <Routes>
                                             <Route path="/" element={<Landing />} />
                                             <Route path="/research" element={<Landing />} />
-                                            <Route
-                                                path="/stylescanner"
-                                                element={<StyleScanner />}
-                                            />
-                                            <Route
-                                                path="/insight"
-                                                element={<Navigate to="/stylescanner" replace />}
-                                            />
+                                            <Route path="/scan" element={<StyleScanner />} />
+                                            <Route path="/insights" element={<Insights />} />
                                             <Route path="/privacy" element={<Privacy />} />
                                             <Route path="/terms" element={<Terms />} />
                                             <Route path="/login" element={<Login />} />
