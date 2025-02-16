@@ -123,10 +123,11 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
         if (!imageSource) {
             return res.status(400).json({ error: 'Image source is required' });
         }
-        model = model || 'o3-mini';
+        model;
         temperature = temperature || 0.7;
         let prompt =
-            'Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.';
+            `Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.
+            Return everything in one JSON with schema: ${}`;
         if (stylePreferences) {
             prompt += ` User style preferences: ${stylePreferences}.`;
         }

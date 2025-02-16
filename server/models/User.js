@@ -2,6 +2,15 @@ import mongoose from 'mongoose';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 
+const FashionAISchema = new mongoose.Schema(
+    {
+        recommendedOutfitStyles: { type: [String], default: [] },
+        colorPaletteSuggestions: { type: [String], default: [] },
+        accessoryRecommendations: { type: [String], default: [] }
+    },
+    { _id: false }
+);
+
 const UserSchema = new mongoose.Schema(
     {
         email: {
@@ -37,27 +46,7 @@ const UserSchema = new mongoose.Schema(
             type: String,
             default: ''
         },
-        researchPreferences: {
-            field: {
-                type: String,
-                trim: true
-            },
-            dataSources: {
-                type: String,
-                trim: true
-            },
-            aiAssistance: {
-                type: String
-            }
-        },
-        insightSettings: {
-            slideLayout: {
-                type: String
-            },
-            theme: {
-                type: String
-            }
-        },
+
         preferences: {
             type: mongoose.Schema.Types.Mixed,
             default: {}
@@ -87,6 +76,10 @@ const UserSchema = new mongoose.Schema(
         isAdmin: {
             type: Boolean,
             default: false
+        },
+        fashionAIProps: {
+            type: FashionAISchema,
+            default: {}
         }
     },
     {

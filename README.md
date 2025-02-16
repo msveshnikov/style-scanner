@@ -124,5 +124,3 @@ Core Values:
 - Privacy and security focus
 
 # TODO
-
-- Insights are suggestions for user (private!)

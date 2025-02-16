@@ -1,0 +1,47 @@
+{
+    "insights": {
+        "outfitAnalysis": {
+            "items": [
+                {
+                    "type": "top",
+                    "description": "White button-down shirt",
+                    "fit": "Slightly oversized",
+                    "condition": "Good"
+                },
+                {
+                    "type": "bottom",
+                    "description": "Navy blue tailored trousers",
+                    "fit": "Well-fitted",
+                    "condition": "Excellent"
+                },
+                {
+                    "type": "footwear",
+                    "description": "Brown leather loafers",
+                    "fit": "Appropriate",
+                    "condition": "Showing some wear"
+                },
+                {
+                    "type": "accessory",
+                    "description": "Silver wristwatch",
+                    "condition": "Excellent"
+                }
+            ],
+            "overallStyle": "Business casual with classic elements",
+            "colorPalette": ["white", "navy blue", "brown", "silver"],
+            "fitAssessment": "Generally well-fitted with intentional oversizing on the shirt"
+        },
+        "recommendations": [
+            "Consider rolling up the sleeves of the shirt for a more relaxed look",
+            "A belt that matches the tone of the loafers would tie the outfit together",
+            "Adding a blazer in charcoal or navy would elevate this for more formal settings",
+            "A pocket square in burgundy would add a pop of color for special occasions"
+        ],
+        "benefits": [
+            "The suggested adjustments will maintain comfort while looking more polished",
+            "These recommendations work with your existing wardrobe without requiring major purchases",
+            "The proposed changes are versatile and can be mixed with other items you own",
+            "These suggestions align with current trends while maintaining a timeless appeal"
+        ],
+        "styleScore": 7.5
+    }
+}

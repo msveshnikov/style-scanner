@@ -31,10 +31,7 @@ const Profile = () => {
     const handleChange = (section, field, value) => {
         setUser((prev) => ({
             ...prev,
-            [section]: {
-                ...(prev[section] || {}),
-                [field]: value
-            }
+            [section]: { ...(prev[section] || {}), [field]: value }
         }));
     };
 
@@ -58,7 +55,6 @@ const Profile = () => {
                 body: JSON.stringify({
                     firstName: user?.firstName,
                     lastName: user?.lastName,
-                    researchPreferences: user?.researchPreferences,
                     insightSettings: user?.insightSettings,
                     preferences: user?.preferences
                 })
@@ -198,76 +194,47 @@ const Profile = () => {
                                 </SimpleGrid>
                             </VStack>
                             <VStack spacing={6} align="stretch" mt={8}>
-                                <Heading size="md">Research Preferences</Heading>
-                                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
+                                <Heading size="md">Fashion AI Preferences</Heading>
+                                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                                     <FormControl>
-                                        <FormLabel>Field of Research</FormLabel>
-                                        <Input
-                                            value={user?.researchPreferences?.field || ''}
-                                            onChange={(e) =>
-                                                handleChange(
-                                                    'researchPreferences',
-                                                    'field',
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                    </FormControl>
-                                    <FormControl>
-                                        <FormLabel>Preferred Data Sources</FormLabel>
-                                        <Input
-                                            value={user?.researchPreferences?.dataSources || ''}
-                                            onChange={(e) =>
-                                                handleChange(
-                                                    'researchPreferences',
-                                                    'dataSources',
-                                                    e.target.value
-                                                )
-                                            }
-                                        />
-                                    </FormControl>
-                                    <FormControl>
-                                        <FormLabel>Level of AI Assistance</FormLabel>
+                                        <FormLabel>Preferred Style</FormLabel>
                                         <Select
-                                            value={user?.researchPreferences?.aiAssistance || ''}
+                                            value={user?.preferences?.preferredStyle || ''}
                                             onChange={(e) =>
                                                 handleChange(
-                                                    'researchPreferences',
-                                                    'aiAssistance',
+                                                    'preferences',
+                                                    'preferredStyle',
                                                     e.target.value
                                                 )
                                             }
                                         >
-                                            <option value="">Select level</option>
-                                            <option value="minimal">Minimal</option>
-                                            <option value="moderate">Moderate</option>
-                                            <option value="full">Full</option>
+                                            <option value="">Select style</option>
+                                            <option value="Casual">Casual</option>
+                                            <option value="Formal">Formal</option>
+                                            <option value="Sporty">Sporty</option>
+                                            <option value="Trendy">Trendy</option>
+                                            <option value="Vintage">Vintage</option>
                                         </Select>
+                                    </FormControl>
+                                    <FormControl>
+                                        <FormLabel>Fashion Mood</FormLabel>
+                                        <Input
+                                            value={user?.preferences?.fashionMood || ''}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    'preferences',
+                                                    'fashionMood',
+                                                    e.target.value
+                                                )
+                                            }
+                                            placeholder="Describe your current fashion mood"
+                                        />
                                     </FormControl>
                                 </SimpleGrid>
                             </VStack>
                             <VStack spacing={6} align="stretch" mt={8}>
                                 <Heading size="md">Insight Settings</Heading>
                                 <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4}>
-                                    <FormControl>
-                                        <FormLabel>Default Slide Layout</FormLabel>
-                                        <Select
-                                            value={user?.insightSettings?.slideLayout || ''}
-                                            onChange={(e) =>
-                                                handleChange(
-                                                    'insightSettings',
-                                                    'slideLayout',
-                                                    e.target.value
-                                                )
-                                            }
-                                        >
-                                            <option value="">Select layout</option>
-                                            <option value="Default">Default</option>
-                                            <option value="Title Slide">Title Slide</option>
-                                            <option value="Bullet List">Bullet List</option>
-                                            <option value="Image Focused">Image Focused</option>
-                                        </Select>
-                                    </FormControl>
                                     <FormControl>
                                         <FormLabel>Theme</FormLabel>
                                         <Select
