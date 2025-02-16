@@ -123,11 +123,11 @@ app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, r
         if (!imageSource) {
             return res.status(400).json({ error: 'Image source is required' });
         }
-        model;
         temperature = temperature || 0.7;
-        let prompt =
-            `Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.
-            Return everything in one JSON with schema: ${}`;
+        const outfitSchema = JSON.parse(
+            fs.readFileSync(join(__dirname, 'outfitSchema.json'), 'utf8')
+        );
+        let prompt = `Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.\nReturn everything in one JSON with schema: ${JSON.stringify(outfitSchema)}`;
         if (stylePreferences) {
             prompt += ` User style preferences: ${stylePreferences}.`;
         }
@@ -412,7 +412,7 @@ app.get('/', async (req, res) => {
 });
 app.get('*', async (req, res) => {
     const html = fs.readFileSync(join(__dirname, '../dist/index.html'), 'utf8');
-    return res.send(html);
+    res.send(html);
 });
 app.use((req, res) => {
     res.status(404).json({ error: 'Not found' });

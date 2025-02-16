@@ -89,7 +89,7 @@ function StyleScanner() {
                 body: JSON.stringify({
                     imageSource: base64Image,
                     stylePreferences: detailedAnalysis ? 'Detailed analysis requested' : '',
-                    model: 'gemini-2.0-flash-thinking-exp-01-21',
+                    model: 'gemini-2.0-flash-thinking-exp-01-21'
                     // temperature: analysisDepth
                 })
             });
