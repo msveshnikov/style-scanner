@@ -13,7 +13,6 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { getTextGemini } from './gemini.js';
 import User from './models/User.js';
-import Presentation from './models/Presentation.js';
 import { replaceGraphics } from './imageService.js';
 import { getTextGpt } from './openai.js';
 import userRoutes from './user.js';
@@ -21,8 +20,6 @@ import Feedback from './models/Feedback.js';
 import { authenticateToken, authenticateTokenOptional } from './middleware/auth.js';
 import adminRoutes from './admin.js';
 import { getTextDeepseek } from './deepseek.js';
-import { fetchSearchResults, searchWebContent } from './search.js';
-import { enrichMetadata } from './utils.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_KEY);
@@ -94,7 +91,7 @@ export const checkAiLimit = async (req, res, next) => {
                     if (user.aiRequestCount >= 3) {
                         return res
                             .status(429)
-                            .json({ error: 'Daily presentation limit reached, please upgrade' });
+                            .json({ error: 'Daily AI request limit reached, please upgrade' });
                     }
                     user.aiRequestCount++;
                 } else {
@@ -127,36 +124,20 @@ const slugify = (text) => {
         .replace(/--+/g, '-');
 };
 
-app.post('/api/generate-presentation', authenticateToken, checkAiLimit, async (req, res) => {
+app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, res) => {
     try {
-        let { topic, numSlides, model, temperature, deepResearch, imageSource } = req.body;
-        console.log(topic, numSlides, model, temperature, deepResearch, imageSource);
-        topic = topic.substring(0, 1000);
-        numSlides = numSlides || 10;
+        let { imageSource, stylePreferences, model, temperature } = req.body;
+        if (!imageSource) {
+            return res.status(400).json({ error: 'Image source is required' });
+        }
         model = model || 'o3-mini';
         temperature = temperature || 0.7;
         const user = await User.findById(req.user.id);
-        const exampleSchema = fs.readFileSync(join(__dirname, 'presentationSchema.json'), 'utf8');
-        const preferencesSummary = `
-          Slide Layout: ${user.presentationSettings.slideLayout || 'standard'},
-          Theme: ${user.presentationSettings.theme || 'light'}`;
-        const webSearchContent = await fetchSearchResults(topic);
-        let webContent = '';
-        if (deepResearch) {
-            webContent = await searchWebContent(webSearchContent);
+        let prompt = `Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.`;
+        if (stylePreferences) {
+            prompt += ` User style preferences: ${stylePreferences}.`;
         }
-        const prompt = `Generate a professional PowerPoint presentation with ${numSlides} slides on the topic "${topic}".
-Consider the following user preferences:
-${preferencesSummary}
-Research the web and think about the topic before generating. Web search results
-<web_search_results>${JSON.stringify(webSearchContent)}</web_search_results>
-<web_content>${webContent}</web_content>
-Use language of topic.
-Format the result as a JSON object with a key "slides" containing an array of slide objects.
-Generate diverse and original/colorful/non-boring content.
-Please ensure that text elements are not overlapped.
-Use the following example schema as a reference for slide structure:
-${exampleSchema}`;
+        prompt += `\nImage Source: ${imageSource}`;
         const result = await generateAIResponse(prompt, model, temperature);
         if (!result) {
             throw new Error('No response from model, please try again later');
@@ -173,18 +154,23 @@ ${exampleSchema}`;
         parsed = await replaceGraphics(parsed, imageSource);
         const isPrivate =
             user.subscriptionStatus === 'active' || user.subscriptionStatus === 'trialing';
-        const presentation = new Presentation({
-            title: parsed.title || topic,
-            description: parsed.description,
-            version: parsed.version,
+        const insightRecord = new Insight({
+            title: 'Style Scan Result',
+            description: parsed.outfitAnalysis || '',
+            version: parsed.version || '1.0',
             model,
-            theme: parsed.theme,
-            slides: parsed.slides,
-            slug: slugify(parsed.title || topic),
+            theme: '',
+            slides: [
+                {
+                    title: 'Outfit Analysis',
+                    content: parsed
+                }
+            ],
+            slug: slugify('Style Scan Result ' + Date.now()),
             userId: req.user.id,
             isPrivate
         });
-        await presentation.save();
+        await insightRecord.save();
         res.status(201).json(parsed);
     } catch (error) {
         console.error(error);
@@ -192,107 +178,7 @@ ${exampleSchema}`;
     }
 });
 
-app.post('/api/improve-presentation', authenticateToken, checkAiLimit, async (req, res) => {
-    try {
-        const { presentation, additions } = req.body;
-        if (!additions) {
-            return res.status(400).json({ error: 'Additions text is required' });
-        }
-        const user = await User.findById(req.user.id);
-        if (
-            !user ||
-            (user.subscriptionStatus !== 'active' && user.subscriptionStatus !== 'trialing')
-        ) {
-            return res
-                .status(403)
-                .json({ error: 'Upgrade subscription to use improvement feature' });
-        }
-        const originalPresentation = await Presentation.findById(presentation._id);
-        if (!originalPresentation) {
-            return res.status(404).json({ error: 'Original presentation not found' });
-        }
-        const exampleSchema = fs.readFileSync(join(__dirname, 'presentationSchema.json'), 'utf8');
-        const prompt = `Improve the following professional PowerPoint presentation by incorporating the following user additions:
-${additions}
-
-The original presentation JSON is:
-${JSON.stringify(originalPresentation, null, 2)}
-
-Use the following schema as a reference for the output:
-${exampleSchema}
-
-Return the improved presentation as a JSON object with a key "slides" containing an array of slide objects. Maintain a coherent title, description, version, and theme. Ensure the text elements are not overlapped.`;
-        const effectiveModel = presentation.model || 'o3-mini';
-        const effectiveTemperature = presentation.temperature || 0.7;
-        const result = await generateAIResponse(prompt, effectiveModel, effectiveTemperature);
-        if (!result) {
-            throw new Error('No response from model, please try again later');
-        }
-        let parsed;
-        try {
-            parsed = JSON.parse(extractCodeSnippet(result));
-        } catch (e) {
-            console.error(e);
-            return res
-                .status(500)
-                .json({ error: 'Failed to parse AI response as JSON, please try again' });
-        }
-        parsed = await replaceGraphics(parsed, presentation.imageSource);
-        const newPresentation = new Presentation({
-            title: parsed.title || originalPresentation.title,
-            description: parsed.description || originalPresentation.description,
-            version: parsed.version,
-            model: effectiveModel,
-            theme: parsed.theme || originalPresentation.theme,
-            slides: parsed.slides,
-            slug: slugify(parsed.title || originalPresentation.title),
-            userId: req.user.id,
-            isPrivate: true
-        });
-        await newPresentation.save();
-        res.status(201).json(parsed);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.get('/api/presentations', async (req, res) => {
-    try {
-        const search = req.query.search;
-        let filter = { $or: [{ isPrivate: false }, { isPrivate: { $exists: false } }] };
-        if (search) {
-            filter = {
-                $and: [
-                    filter,
-                    {
-                        $or: [
-                            { title: { $regex: search, $options: 'i' } },
-                            { description: { $regex: search, $options: 'i' } }
-                        ]
-                    }
-                ]
-            };
-        }
-        const presentations = await Presentation.find(filter).sort({ createdAt: -1 }).limit(300);
-        const limitedPresentations = presentations.map((presentation) => ({
-            _id: presentation._id,
-            title: presentation.title,
-            description: presentation.description,
-            model: presentation.model,
-            firstSlideTitle:
-                presentation.slides && presentation.slides.length > 0
-                    ? presentation.slides[0].title
-                    : null,
-            slug: presentation.slug
-        }));
-        res.status(200).json(limitedPresentations);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-    }
-});
-app.get('/api/mypresentations', authenticateToken, async (req, res) => {
+app.get('/api/myinsights', authenticateToken, async (req, res) => {
     try {
         const search = req.query.search;
         let query = { userId: req.user.id };
@@ -309,36 +195,35 @@ app.get('/api/mypresentations', authenticateToken, async (req, res) => {
                 ]
             };
         }
-        const presentations = await Presentation.find(query);
-        const limitedPresentations = presentations.map((presentation) => ({
-            _id: presentation._id,
-            title: presentation.title,
-            description: presentation.description,
-            model: presentation.model,
-            firstSlideTitle:
-                presentation.slides && presentation.slides.length > 0
-                    ? presentation.slides[0].title
-                    : null,
-            slug: presentation.slug
+        const insights = await Insight.find(query);
+        const limitedInsights = insights.map((insight) => ({
+            _id: insight._id,
+            title: insight.title,
+            description: insight.description,
+            model: insight.model,
+            firstInsightTitle:
+                insight.slides && insight.slides.length > 0 ? insight.slides[0].title : null,
+            slug: insight.slug
         }));
-        res.status(200).json(limitedPresentations);
+        res.status(200).json(limitedInsights);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
     }
 });
-app.get('/api/presentations/:identifier', async (req, res) => {
+
+app.get('/api/insights/:identifier', async (req, res) => {
     try {
         const { identifier } = req.params;
-        let presentation = null;
+        let insight = null;
         if (mongoose.Types.ObjectId.isValid(identifier)) {
-            presentation = await Presentation.findById(identifier);
+            insight = await Insight.findById(identifier);
         }
-        if (!presentation) {
-            presentation = await Presentation.findOne({ slug: identifier });
+        if (!insight) {
+            insight = await Insight.findOne({ slug: identifier });
         }
-        if (!presentation) return res.status(404).json({ error: 'Presentation not found' });
-        res.status(200).json(presentation);
+        if (!insight) return res.status(404).json({ error: 'Insight not found' });
+        res.status(200).json(insight);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
@@ -456,11 +341,12 @@ app.get('/api/docs', async (req, res) => {
 });
 app.get('/sitemap.xml', async (req, res) => {
     try {
-        const presentations = await Presentation.find();
+        const insights = await Insight.find();
         const staticRoutes = [
             '/',
             '/research',
-            '/presentation',
+            '/insights',
+            '/Insight',
             '/insights',
             '/privacy',
             '/terms',
@@ -475,9 +361,9 @@ app.get('/sitemap.xml', async (req, res) => {
         let urls = staticRoutes
             .map((route) => `<url><loc>https://StyleScanner.vip${route}</loc></url>`)
             .join('');
-        presentations.forEach((p) => {
+        insights.forEach((p) => {
             if (p.slug) {
-                urls += `<url><loc>https://StyleScanner.vip/presentation/${p.slug}</loc></url>`;
+                urls += `<url><loc>https://StyleScanner.vip/insight/${p.slug}</loc></url>`;
             }
         });
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -496,12 +382,7 @@ app.get('/', async (req, res) => {
 });
 app.get('*', async (req, res) => {
     const html = fs.readFileSync(join(__dirname, '../dist/index.html'), 'utf8');
-    if (!req.path.startsWith('/presentation/')) {
-        return res.send(html);
-    }
-    const slug = req.path.substring(14);
-    const enrichedHtml = await enrichMetadata(html, slug);
-    res.send(enrichedHtml);
+    return res.send(html);
 });
 app.use((req, res) => {
     res.status(404).json({ error: 'Not found' });
