@@ -124,3 +124,5 @@ Core Values:
 - Privacy and security focus
 
 # TODO
+
+- improve design

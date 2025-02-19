@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 function Insights() {
     const [insights, setInsights] = useState(null);
 
-
     // useEffect(() => {
     //     if (file) {
     //         const previewUrl = URL.createObjectURL(file);

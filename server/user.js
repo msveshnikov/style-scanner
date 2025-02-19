@@ -79,7 +79,7 @@ const userRoutes = (app) => {
             console.error(error);
             res.status(500).json({ error: 'Registration failed' });
         }
-    });
+    }); 
 
     app.post('/api/auth/login', async (req, res) => {
         try {

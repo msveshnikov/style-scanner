@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import crypto from 'crypto';
-import bcrypt from 'bcrypt';
 
 const FashionAISchema = new mongoose.Schema(
     {
@@ -86,17 +85,6 @@ const UserSchema = new mongoose.Schema(
         timestamps: true
     }
 );
-
-UserSchema.pre('save', async function (next) {
-    if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
-    next();
-});
-
-UserSchema.methods.comparePassword = async function (candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
-};
 
 UserSchema.methods.generatePasswordResetToken = function () {
     const resetToken = crypto.randomBytes(20).toString('hex');
