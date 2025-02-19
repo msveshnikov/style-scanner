@@ -77,6 +77,7 @@ const generateAIResponse = async (prompt, model, temperature = 0.7) => {
             throw new Error('Invalid model specified');
     }
 };
+
 export const checkAiLimit = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id);
@@ -110,11 +111,13 @@ export const checkAiLimit = async (req, res, next) => {
         next(err);
     }
 };
+
 const extractCodeSnippet = (text) => {
     const codeBlockRegex = /```(?:json|js|html)?\n([\s\S]*?)\n```/;
     const match = text.match(codeBlockRegex);
     return match ? match[1] : text;
 };
+
 app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, res) => {
     try {
         let { imageSource, stylePreferences, model, temperature } = req.body;
@@ -212,6 +215,7 @@ app.get('/api/insights/:identifier', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
 app.post('/api/feedback', authenticateTokenOptional, async (req, res) => {
     try {
         const { message, type } = req.body;
@@ -227,6 +231,7 @@ app.post('/api/feedback', authenticateTokenOptional, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
 app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     try {
         const event = await stripe.webhooks.constructEventAsync(
@@ -284,6 +289,7 @@ app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), async
         res.status(400).send(`Webhook Error: ${error.message}`);
     }
 });
+
 app.get('/api/docs', async (req, res) => {
     try {
         const search = req.query.search ? req.query.search.toLowerCase() : '';
@@ -322,6 +328,7 @@ app.get('/api/docs', async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
+
 app.get('/sitemap.xml', async (req, res) => {
     try {
         const insights = await Insight.find();
