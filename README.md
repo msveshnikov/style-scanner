@@ -124,5 +124,3 @@ Core Values:
 - Privacy and security focus
 
 # TODO
-
-- use code from aiService for image resize/sending to gpt-4o-mini, remove food prompts, add fashion prompts

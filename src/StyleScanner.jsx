@@ -56,14 +56,6 @@ function StyleScanner() {
         setDetailedAnalysis(wantsDetailed);
     };
 
-    const convertToBase64 = (file) =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-
     const handleGenerateStyleInsights = async (e) => {
         e.preventDefault();
         if (!file) {
@@ -77,42 +69,45 @@ function StyleScanner() {
             return;
         }
         setScanning(true);
-        try {
-            const base64Image = await convertToBase64(file);
+        const reader = new FileReader();
+        reader.onloadend = async () => {
+            const base64Image = reader.result.split(',')[1];
             const token = localStorage.getItem('token');
-            const response = await fetch(`${API_URL}/api/generate-insight`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { Authorization: `Bearer ${token}` } : {})
-                },
-                body: JSON.stringify({
-                    imageSource: base64Image,
-                    stylePreferences: detailedAnalysis ? 'Detailed analysis requested' : '',
-                    model: 'gemini-2.0-flash-thinking-exp-01-21',
-                    temperature: analysisDepth
-                })
-            });
-            if (!response.ok) {
-                if (response.status === 403) {
-                    throw new Error('Please login to scan your style');
+            try {
+                const response = await fetch(`${API_URL}/api/generate-insight`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { Authorization: `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({
+                        imageSource: base64Image,
+                        analysisDepth: analysisDepth,
+                        stylePreferences: detailedAnalysis ? 'Detailed analysis requested' : ''
+                    })
+                });
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        throw new Error('Please login to scan your style');
+                    }
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to scan style');
                 }
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to scan style');
+                const result = await response.json();
+                setInsights(result.insights);
+            } catch (error) {
+                toast({
+                    title: 'Error',
+                    description: error.message,
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true
+                });
+            } finally {
+                setScanning(false);
             }
-            const result = await response.json();
-            setInsights(result.insights);
-        } catch (error) {
-            toast({
-                title: 'Error',
-                description: error.message,
-                status: 'error',
-                duration: 5000,
-                isClosable: true
-            });
-        } finally {
-            setScanning(false);
-        }
+        };
+        reader.readAsDataURL(file);
     };
 
     return (
@@ -127,8 +122,9 @@ function StyleScanner() {
                         <FormControl>
                             <FormLabel>Analysis Depth</FormLabel>
                             <Slider
+                                aria-label="analysis-depth"
                                 value={analysisDepth}
-                                onChange={setAnalysisDepth}
+                                onChange={(val) => setAnalysisDepth(parseFloat(val))}
                                 min={0}
                                 max={1}
                                 step={0.1}
@@ -138,7 +134,9 @@ function StyleScanner() {
                                 </SliderTrack>
                                 <SliderThumb />
                             </Slider>
-                            <Text textAlign="center">{analysisDepth}</Text>
+                            <Text textAlign="center">
+                                Depth: {(analysisDepth * 100).toFixed(0)}%
+                            </Text>
                         </FormControl>
                         <FormControl display="flex" alignItems="center">
                             <FormLabel htmlFor="detailed-analysis" mb="0">

@@ -11,15 +11,14 @@ import morgan from 'morgan';
 import compression from 'compression';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
-import { getTextGemini } from './gemini.js';
 import User from './models/User.js';
 import Insight from './models/Insight.js';
 import { replaceGraphics } from './imageService.js';
-import { getTextGpt } from './openai.js';
 import userRoutes from './user.js';
 import Feedback from './models/Feedback.js';
 import { authenticateToken, authenticateTokenOptional } from './middleware/auth.js';
 import adminRoutes from './admin.js';
+import { analyzeFashionImage } from './aiService.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_KEY);
@@ -60,7 +59,6 @@ if (process.env.NODE_ENV === 'production') {
 mongoose.connect(process.env.MONGODB_URI, {});
 userRoutes(app);
 adminRoutes(app);
-
 
 export const checkAiLimit = async (req, res, next) => {
     try {
@@ -104,20 +102,11 @@ const extractCodeSnippet = (text) => {
 
 app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, res) => {
     try {
-        let { imageSource, stylePreferences, model, temperature } = req.body;
+        let { imageSource, stylePreferences } = req.body;
         if (!imageSource) {
             return res.status(400).json({ error: 'Image source is required' });
         }
-        temperature = temperature || 0.7;
-        const outfitSchema = JSON.parse(
-            fs.readFileSync(join(__dirname, 'outfitSchema.json'), 'utf8')
-        );
-        let prompt = `Analyze the outfit depicted in the image provided below. Provide detailed and actionable fashion insights including an outfit analysis, style recommendations, and clear benefits of the suggestions.\nReturn everything in one JSON with schema: ${JSON.stringify(outfitSchema)}`;
-        if (stylePreferences) {
-            prompt += ` User style preferences: ${stylePreferences}.`;
-        }
-        prompt += `\nImage Source: ${imageSource}`;
-        const result = await generateAIResponse(prompt, model, temperature);
+        const result = analyzeFashionImage(imageSource, stylePreferences);
         if (!result) {
             throw new Error('No response from model, please try again later');
         }
