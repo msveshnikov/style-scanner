@@ -20,7 +20,6 @@ import userRoutes from './user.js';
 import Feedback from './models/Feedback.js';
 import { authenticateToken, authenticateTokenOptional } from './middleware/auth.js';
 import adminRoutes from './admin.js';
-// import { getTextDeepseek } from './deepseek.js';
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_KEY);
@@ -61,22 +60,7 @@ if (process.env.NODE_ENV === 'production') {
 mongoose.connect(process.env.MONGODB_URI, {});
 userRoutes(app);
 adminRoutes(app);
-const generateAIResponse = async (prompt, model, temperature = 0.7) => {
-    switch (model) {
-        // case 'o3-mini':
-        case 'gpt-4o-mini': {
-            return await getTextGpt(prompt, model, temperature);
-        }
-        // case 'gemini-2.0-pro-exp-02-05':
-        case 'gemini-2.0-flash-001':
-        case 'gemini-2.0-flash-thinking-exp-01-21':
-            return await getTextGemini(prompt, model, temperature);
-        // case 'deepseek-reasoner':
-        //     return await getTextDeepseek(prompt, model, temperature);
-        default:
-            throw new Error('Invalid model specified');
-    }
-};
+
 
 export const checkAiLimit = async (req, res, next) => {
     try {
@@ -362,6 +346,7 @@ ${urls}
         res.status(500).send(err.message);
     }
 });
+
 app.get('/', async (req, res) => {
     const html = fs.readFileSync(join(__dirname, '../dist/landing.html'), 'utf8');
     res.send(html);
