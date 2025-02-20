@@ -370,7 +370,7 @@ const Admin = () => {
                 <TabList>
                     <Tab>Over</Tab>
                     <Tab>Usrs</Tab>
-                    <Tab>Pres</Tab>
+                    <Tab>Insights</Tab>
                     <Tab>Feed</Tab>
                 </TabList>
                 <TabPanels>
