@@ -23,6 +23,7 @@ export const getText = async (prompt, model = 'gpt-4o-mini', temperature = 0.5) 
 };
 
 const extractCodeSnippet = (text) => {
+    console.log(text);
     const codeBlockRegex = /```(?:json|js|html)?\n([\s\S]*?)\n```/;
     const match = text.match(codeBlockRegex);
     return match ? match[1] : text;

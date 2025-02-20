@@ -13,7 +13,6 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import User from './models/User.js';
 import Insight from './models/Insight.js';
-import { replaceGraphics } from './imageService.js';
 import userRoutes from './user.js';
 import Feedback from './models/Feedback.js';
 import { authenticateToken, authenticateTokenOptional } from './middleware/auth.js';
@@ -51,7 +50,7 @@ app.use(morgan('dev'));
 app.use(compression());
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 130
+    max: 30
 });
 if (process.env.NODE_ENV === 'production') {
     app.use('/api/', limiter);
@@ -94,43 +93,27 @@ export const checkAiLimit = async (req, res, next) => {
     }
 };
 
-const extractCodeSnippet = (text) => {
-    const codeBlockRegex = /```(?:json|js|html)?\n([\s\S]*?)\n```/;
-    const match = text.match(codeBlockRegex);
-    return match ? match[1] : text;
-};
-
 app.post('/api/generate-insight', authenticateToken, checkAiLimit, async (req, res) => {
     try {
         let { imageSource, stylePreferences } = req.body;
         if (!imageSource) {
             return res.status(400).json({ error: 'Image source is required' });
         }
-        const result = analyzeFashionImage(imageSource, stylePreferences);
+        const result = await analyzeFashionImage(imageSource, stylePreferences);
         if (!result) {
             throw new Error('No response from model, please try again later');
         }
-        let parsed;
-        try {
-            parsed = JSON.parse(extractCodeSnippet(result));
-        } catch (e) {
-            console.error(e);
-            return res
-                .status(500)
-                .json({ error: 'Failed to parse AI response as JSON, please try again' });
-        }
-        parsed = await replaceGraphics(parsed, imageSource);
         const insightRecord = new Insight({
             title: 'Fashion Insight',
             photo: imageSource,
-            recommendations: parsed.recommendations || '',
             userId: req.user.id,
-            benefits: parsed.benefits || [],
-            analysis: parsed,
-            styleScore: 0
+            recommendations: result?.insights?.recommendations,
+            benefits: result?.insights?.benefits,
+            analysis: result?.insights?.outfitAnalysis,
+            styleScore: result?.insights?.styleScore
         });
         await insightRecord.save();
-        res.status(201).json(parsed);
+        res.json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });

@@ -14,7 +14,13 @@ import {
     SliderFilledTrack,
     SliderThumb,
     SimpleGrid,
-    Image
+    Image,
+    Card,
+    CardHeader,
+    CardBody,
+    Stack,
+    Divider,
+    Spinner
 } from '@chakra-ui/react';
 import { useContext, useState } from 'react';
 import { API_URL, UserContext } from './App';
@@ -34,6 +40,7 @@ function StyleScanner() {
             const selectedFile = e.target.files[0];
             setFile(selectedFile);
             setPreview(URL.createObjectURL(selectedFile));
+            setInsights(null); // Clear previous insights when new image is selected
         }
     };
 
@@ -69,6 +76,7 @@ function StyleScanner() {
             return;
         }
         setScanning(true);
+        setInsights(null); // Clear previous insights when scanning starts
         const reader = new FileReader();
         reader.onloadend = async () => {
             const base64Image = reader.result.split(',')[1];
@@ -112,168 +120,239 @@ function StyleScanner() {
 
     return (
         <Box p={6} maxW="1200px" mx="auto">
+            <Heading as="h2" size="xl" textAlign="center" mb={6}>
+                Style Scanner
+            </Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
-                <Box as="form" onSubmit={handleGenerateStyleInsights}>
-                    <VStack spacing={4}>
-                        <FormControl isRequired>
-                            <FormLabel>Outfit Photo</FormLabel>
-                            <Input type="file" accept="image/*" onChange={handleFileChange} />
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Analysis Depth</FormLabel>
-                            <Slider
-                                aria-label="analysis-depth"
-                                value={analysisDepth}
-                                onChange={(val) => setAnalysisDepth(parseFloat(val))}
-                                min={0}
-                                max={1}
-                                step={0.1}
+                <Card>
+                    <CardHeader>
+                        <Heading size="md">Upload Your Outfit</Heading>
+                    </CardHeader>
+                    <CardBody>
+                        <VStack spacing={4}>
+                            <FormControl isRequired>
+                                <FormLabel>Outfit Photo</FormLabel>
+                                <Input type="file" accept="image/*" onChange={handleFileChange} />
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel>Analysis Depth</FormLabel>
+                                <Slider
+                                    aria-label="analysis-depth"
+                                    value={analysisDepth}
+                                    onChange={(val) => setAnalysisDepth(parseFloat(val))}
+                                    min={0}
+                                    max={1}
+                                    step={0.1}
+                                >
+                                    <SliderTrack>
+                                        <SliderFilledTrack />
+                                    </SliderTrack>
+                                    <SliderThumb />
+                                </Slider>
+                                <Text textAlign="center" fontSize="sm" color="gray.500">
+                                    Depth: {(analysisDepth * 100).toFixed(0)}%
+                                </Text>
+                            </FormControl>
+                            <FormControl
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="space-between"
                             >
-                                <SliderTrack>
-                                    <SliderFilledTrack />
-                                </SliderTrack>
-                                <SliderThumb />
-                            </Slider>
-                            <Text textAlign="center">
-                                Depth: {(analysisDepth * 100).toFixed(0)}%
-                            </Text>
-                        </FormControl>
-                        <FormControl display="flex" alignItems="center">
-                            <FormLabel htmlFor="detailed-analysis" mb="0">
-                                Detailed Analysis™
-                            </FormLabel>
-                            <Switch
-                                id="detailed-analysis"
-                                isChecked={detailedAnalysis}
-                                onChange={handleDetailedAnalysisChange}
-                            />
-                        </FormControl>
-                        <Button
-                            mt={4}
-                            colorScheme="blue"
-                            size="lg"
-                            w="full"
-                            type="submit"
-                            isLoading={scanning}
-                            loadingText="Scanning..."
-                        >
-                            Scan Style
-                        </Button>
-                    </VStack>
-                </Box>
-                <Box>
-                    {preview ? (
-                        <Image
-                            src={preview}
-                            alt="Outfit Preview"
-                            borderRadius="md"
-                            maxH="300px"
-                            objectFit="cover"
-                            mb={4}
-                        />
-                    ) : (
-                        <Box borderWidth="1px" borderRadius="md" p={4} textAlign="center" mb={4}>
-                            <Text>No image selected</Text>
-                        </Box>
-                    )}
-                    {insights && (
-                        <Box p={6} borderWidth="1px" borderRadius="lg">
-                            {insights.outfitAnalysis && (
-                                <Box mb={4}>
-                                    <Heading size="md" mb={2} textAlign="center">
-                                        Outfit Analysis
-                                    </Heading>
-                                    {insights.outfitAnalysis.overallStyle && (
-                                        <Text>
-                                            Overall Style: {insights.outfitAnalysis.overallStyle}
-                                        </Text>
-                                    )}
-                                    {insights.outfitAnalysis.fitAssessment && (
-                                        <Text>
-                                            Fit Assessment: {insights.outfitAnalysis.fitAssessment}
-                                        </Text>
-                                    )}
-                                    {insights.outfitAnalysis.colorPalette && (
-                                        <Text>
-                                            Color Palette:{' '}
-                                            {insights.outfitAnalysis.colorPalette.join(', ')}
-                                        </Text>
-                                    )}
-                                    {insights.outfitAnalysis.items &&
-                                        insights.outfitAnalysis.items.length > 0 && (
-                                            <Box mt={2}>
-                                                <Text fontSize="md" fontWeight="bold">
-                                                    Items:
+                                <FormLabel htmlFor="detailed-analysis" mb="0">
+                                    Detailed Analysis™
+                                </FormLabel>
+                                <Switch
+                                    id="detailed-analysis"
+                                    isChecked={detailedAnalysis}
+                                    onChange={handleDetailedAnalysisChange}
+                                    colorScheme="blue"
+                                />
+                            </FormControl>
+                            <Button
+                                colorScheme="blue"
+                                size="lg"
+                                w="full"
+                                type="submit"
+                                isLoading={scanning}
+                                loadingText="Scanning..."
+                                onClick={handleGenerateStyleInsights}
+                            >
+                                Scan Style
+                            </Button>
+                        </VStack>
+                    </CardBody>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <Heading size="md">Outfit Preview & Insights</Heading>
+                    </CardHeader>
+                    <CardBody>
+                        <Stack spacing={4}>
+                            {preview ? (
+                                <Image
+                                    src={preview}
+                                    alt="Outfit Preview"
+                                    borderRadius="md"
+                                    maxH="350px"
+                                    objectFit="cover"
+                                    mb={2}
+                                />
+                            ) : (
+                                <Box
+                                    borderWidth="1px"
+                                    borderRadius="md"
+                                    p={4}
+                                    textAlign="center"
+                                    mb={2}
+                                    borderColor="gray.200"
+                                    bg="gray.50"
+                                >
+                                    <Text color="gray.500">No image selected</Text>
+                                </Box>
+                            )}
+
+                            {scanning && (
+                                <Box display="flex" justifyContent="center">
+                                    <Spinner size="lg" color="blue.500" />
+                                </Box>
+                            )}
+
+                            {insights && (
+                                <Box>
+                                    <Divider mb={4} />
+                                    {insights.outfitAnalysis && (
+                                        <Box mb={4}>
+                                            <Heading size="sm" mb={2} textAlign="center">
+                                                Outfit Analysis
+                                            </Heading>
+                                            {insights.outfitAnalysis.overallStyle && (
+                                                <Text>
+                                                    <Text fontWeight="bold">Overall Style:</Text>{' '}
+                                                    {insights.outfitAnalysis.overallStyle}
                                                 </Text>
-                                                <VStack align="start" spacing={1} mt={1}>
-                                                    {insights.outfitAnalysis.items.map(
-                                                        (item, index) => (
-                                                            <Text key={index} fontSize="sm">
-                                                                {item.type}: {item.description}
-                                                                {item.fit
-                                                                    ? `. Fit: ${item.fit}`
-                                                                    : ''}
-                                                                {item.condition
-                                                                    ? `. Condition: ${item.condition}`
-                                                                    : ''}
-                                                            </Text>
-                                                        )
+                                            )}
+                                            {insights.outfitAnalysis.fitAssessment && (
+                                                <Text>
+                                                    <Text fontWeight="bold">Fit Assessment:</Text>{' '}
+                                                    {insights.outfitAnalysis.fitAssessment}
+                                                </Text>
+                                            )}
+                                            {insights.outfitAnalysis.colorPalette && (
+                                                <Text>
+                                                    <Text fontWeight="bold">Color Palette:</Text>{' '}
+                                                    {insights.outfitAnalysis.colorPalette.join(
+                                                        ', '
                                                     )}
+                                                </Text>
+                                            )}
+                                            {insights.outfitAnalysis.items &&
+                                                insights.outfitAnalysis.items.length > 0 && (
+                                                    <Box mt={2}>
+                                                        <Text fontSize="sm" fontWeight="bold">
+                                                            Items:
+                                                        </Text>
+                                                        <VStack align="start" spacing={1} mt={1}>
+                                                            {insights.outfitAnalysis.items.map(
+                                                                (item, index) => (
+                                                                    <Text key={index} fontSize="xs">
+                                                                        <Text
+                                                                            as="span"
+                                                                            fontWeight="medium"
+                                                                        >
+                                                                            {item.type}:
+                                                                        </Text>{' '}
+                                                                        {item.description}
+                                                                        {item.fit ? (
+                                                                            <Text as="span">
+                                                                                .{' '}
+                                                                                <Text
+                                                                                    as="span"
+                                                                                    fontWeight="medium"
+                                                                                >
+                                                                                    Fit:
+                                                                                </Text>{' '}
+                                                                                {item.fit}
+                                                                            </Text>
+                                                                        ) : null}
+                                                                        {item.condition ? (
+                                                                            <Text as="span">
+                                                                                .{' '}
+                                                                                <Text
+                                                                                    as="span"
+                                                                                    fontWeight="medium"
+                                                                                >
+                                                                                    Condition:
+                                                                                </Text>{' '}
+                                                                                {item.condition}
+                                                                            </Text>
+                                                                        ) : null}
+                                                                    </Text>
+                                                                )
+                                                            )}
+                                                        </VStack>
+                                                    </Box>
+                                                )}
+                                        </Box>
+                                    )}
+                                    {typeof insights.styleScore !== 'undefined' && (
+                                        <Box mb={4}>
+                                            <Text fontSize="sm" fontWeight="bold">
+                                                Style Score:
+                                            </Text>
+                                            <Text fontSize="md">{insights.styleScore}</Text>
+                                        </Box>
+                                    )}
+                                    {insights.recommendations && (
+                                        <Box mb={4}>
+                                            <Text fontSize="sm" fontWeight="bold">
+                                                Recommendations:
+                                            </Text>
+                                            {Array.isArray(insights.recommendations) ? (
+                                                <VStack align="start" spacing={1} mt={2}>
+                                                    {insights.recommendations.map((rec, index) => (
+                                                        <Text key={index} fontSize="xs">
+                                                            • {rec}
+                                                        </Text>
+                                                    ))}
+                                                </VStack>
+                                            ) : (
+                                                <Text fontSize="sm">
+                                                    {insights.recommendations}
+                                                </Text>
+                                            )}
+                                        </Box>
+                                    )}
+                                    {insights.benefits &&
+                                        Array.isArray(insights.benefits) &&
+                                        insights.benefits.length > 0 && (
+                                            <Box>
+                                                <Text fontSize="sm" fontWeight="bold">
+                                                    Benefits:
+                                                </Text>
+                                                <VStack align="start" spacing={1} mt={2}>
+                                                    {insights.benefits.map((benefit, index) => (
+                                                        <Text key={index} fontSize="xs">
+                                                            • {benefit}
+                                                        </Text>
+                                                    ))}
                                                 </VStack>
                                             </Box>
                                         )}
+                                    {!insights.outfitAnalysis &&
+                                        !insights.recommendations &&
+                                        !insights.benefits &&
+                                        !scanning && (
+                                            <Text fontSize="sm" color="gray.600">
+                                                No insights available yet. Scan your outfit to see
+                                                analysis.
+                                            </Text>
+                                        )}
                                 </Box>
                             )}
-                            {typeof insights.styleScore !== 'undefined' && (
-                                <Box mb={4}>
-                                    <Text fontSize="md" fontWeight="bold">
-                                        Style Score:
-                                    </Text>
-                                    <Text fontSize="md">{insights.styleScore}</Text>
-                                </Box>
-                            )}
-                            {insights.recommendations && (
-                                <Box mb={4}>
-                                    <Text fontSize="md" fontWeight="bold">
-                                        Recommendations:
-                                    </Text>
-                                    {Array.isArray(insights.recommendations) ? (
-                                        <VStack align="start" spacing={2} mt={2}>
-                                            {insights.recommendations.map((rec, index) => (
-                                                <Text key={index} fontSize="sm">
-                                                    • {rec}
-                                                </Text>
-                                            ))}
-                                        </VStack>
-                                    ) : (
-                                        <Text fontSize="md">{insights.recommendations}</Text>
-                                    )}
-                                </Box>
-                            )}
-                            {insights.benefits &&
-                                Array.isArray(insights.benefits) &&
-                                insights.benefits.length > 0 && (
-                                    <Box>
-                                        <Text fontSize="md" fontWeight="bold">
-                                            Benefits:
-                                        </Text>
-                                        <VStack align="start" spacing={2} mt={2}>
-                                            {insights.benefits.map((benefit, index) => (
-                                                <Text key={index} fontSize="sm">
-                                                    • {benefit}
-                                                </Text>
-                                            ))}
-                                        </VStack>
-                                    </Box>
-                                )}
-                            {!insights.outfitAnalysis &&
-                                !insights.recommendations &&
-                                !insights.benefits && (
-                                    <Text fontSize="md">No insights available.</Text>
-                                )}
-                        </Box>
-                    )}
-                </Box>
+                        </Stack>
+                    </CardBody>
+                </Card>
             </SimpleGrid>
         </Box>
     );
