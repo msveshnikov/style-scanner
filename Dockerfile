@@ -7,7 +7,7 @@ RUN bun install
 
 # Copy source code
 COPY . .
-ENV VITE_GOOGLE_CLIENT_ID 652455043417-2tj5qo41pl38e6ufsvplut50e6a2asmp.apps.googleusercontent.com
+ENV 693269408724-4d2npj45o5s1iehl2nv38mu9jn3oap61.apps.googleusercontent.com
 
 # Build the application
 RUN bun run build
