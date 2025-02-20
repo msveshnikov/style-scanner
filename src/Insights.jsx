@@ -88,7 +88,7 @@ function Insights() {
                     <Box key={insight._id} borderWidth="1px" borderRadius="lg" overflow="hidden">
                         {insight.photo && (
                             <Image
-                                src={insight.photo}
+                                src={"data:image/jpeg;base64,"+insight.photo}
                                 alt="Outfit"
                                 height="300px"
                                 objectFit="cover"
