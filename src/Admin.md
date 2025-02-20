@@ -1,279 +1,256 @@
-# Admin Dashboard Component Documentation
-
-This document provides comprehensive documentation for the file **src/Admin.jsx**. It covers an
-overview, detailed descriptions of functions and methods, parameters, return values, and usage
-examples. This component is a key part of the project’s frontend admin interface and is built with
-React and Chakra UI.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [File Structure & Dependencies](#file-structure--dependencies)
-3. [Component: Admin](#component-admin)
-4. [Functions and Methods](#functions-and-methods)
-    - [fetchData](#fetchdata)
-    - [handleDelete](#handledelete)
-    - [handleSubscriptionChange](#handlesubscriptionchange)
-    - [renderOverviewTab](#renderoverviewtab)
-5. [Component Layout and Behavior](#component-layout-and-behavior)
-6. [Usage Example](#usage-example)
-7. [Future Improvements](#future-improvements)
-
----
+# File Documentation: src\Admin.jsx
 
 ## Overview
 
-The **Admin** component provides an administrative dashboard interface for managing key entities
-within the application such as users, insights, and user feedback. The dashboard presents
-statistical overviews using charts, detailed tables for each entity, and actions for updating or
-deleting records. It utilizes several Chakra UI components for layout and style as well as Chart.js
-(via react-chartjs-2) to render growth charts.
+The `Admin.jsx` file defines the `Admin` React component, which serves as the administrative
+dashboard for the application. This component provides administrators with a comprehensive view of
+key application metrics, user management capabilities, insight moderation, and feedback review. It
+leverages Chakra UI for styling and layout, `react-chartjs-2` and `chart.js` for data visualization,
+and interacts with a backend API (defined by `API_URL` in `src\App.jsx`) to fetch and manage data.
 
----
+Located within the `src` directory, which typically houses the main frontend source code,
+`Admin.jsx` is a crucial part of the application's administrative interface. It is likely rendered
+conditionally based on user roles or authentication status, ensuring only authorized personnel can
+access and manage the application's backend data.
 
-## File Structure & Dependencies
+The dashboard is structured into tabs for easy navigation and organization of different
+administrative functions:
 
-The project tree indicates that **src/Admin.jsx** is part of a larger frontend application. Here is
-a brief excerpt of the project structure related to this file:
+- **Overview Tab**: Displays aggregated statistics about the application's performance, user growth
+  trends, insight creation patterns, and model usage distribution using charts and stat cards.
+- **Users Tab**: Presents a table of users, allowing administrators to view user details, manage
+  subscription statuses, and delete user accounts.
+- **Insights Tab**: Shows a table of user-generated insights, enabling administrators to review
+  insights, adjust their privacy settings (public/private), and delete insights.
+- **Feedback Tab**: Lists user feedback submissions, categorized by type (bug, feature, etc.),
+  allowing administrators to review messages and delete feedback entries.
 
-```
-project-root/
-├── src/
-│   ├── Admin.jsx         <-- (This file)
-│   ├── App.jsx
-│   ├── Feedback.jsx
-│   ├── Insight.jsx
-│   └── ...other components
-├── server/
-│   ├── admin.js
-│   ├── user.js
-│   └── ...other server files
-├── public/
-└── docs/
-```
+## Component: `Admin`
 
-### Main Dependencies
-
-- **React**: Core library to build the functional component and identity hooks like `useState`,
-  `useEffect`, `useCallback`, and `useRef`.
-- **Chakra UI**: Provides the UI components (Container, Table, Card, Tabs, AlertDialog, etc.) and
-  utility hooks (useToast).
-- **Chart.js & react-chartjs-2**: Used to render interactive charts (line charts for displaying user
-  and insight growth).
-- **API_URL Constant**: Imported from `App.jsx`, used for constructing API endpoint URLs.
-
----
-
-## Component: Admin
-
-The **Admin** component is the default export of the file and acts as the main administrative
-dashboard. It is designed to:
-
-- Fetch and display statistical data (dashboard metrics, user and insight growth).
-- Render tables for managing users, insights, and feedback.
-- Allow administrative actions such as updating a user’s subscription status and deleting items.
-- Provide a refresh mechanism to re-fetch data.
+The `Admin` component is the main functional component defined in `Admin.jsx`. It orchestrates data
+fetching, state management, and rendering of the admin dashboard UI.
 
 ### State Variables
 
-- **stats**: Object holding dashboard statistics, user growth data, and insight statistics.
-- **users**: Array of user objects.
-- **insights**: Array of insight objects.
-- **feedbacks**: Array of feedback objects.
-- **isDeleteAlertOpen**: Boolean flag to control the display of the deletion confirmation dialog.
-- **itemToDelete**: Object that stores the `id` and `type` of the item that is pending deletion.
-- **isLoading**: Boolean flag indicating whether data is being loaded.
-- **selectedTab**: Number representing the currently active tab in the dashboard.
+The `Admin` component utilizes several state variables to manage data and UI interactions:
 
----
+- `stats`: An object holding aggregated statistics fetched from the `/api/admin/dashboard` endpoint.
+  It includes overall stats, user growth data, and insight stats.
+    ```javascript
+    const [stats, setStats] = useState({ stats: {}, userGrowth: [], insightsStats: {} });
+    ```
 
-## Functions and Methods
+````
 
-### fetchData
+- `users`: An array of user objects fetched from the `/api/admin/users` endpoint.
+    ```javascript
+    const [users, setUsers] = useState([]);
+    ```
+- `insights`: An array of insight objects fetched from the `/api/admin/insights` endpoint.
+    ```javascript
+    const [insights, setInsights] = useState([]);
+    ```
+- `feedbacks`: An array of feedback objects fetched from the `/api/admin/feedbacks` endpoint.
+    ```javascript
+    const [feedbacks, setFeedbacks] = useState([]);
+    ```
+- `isDeleteAlertOpen`: A boolean state to control the visibility of the delete confirmation
+  AlertDialog.
+    ```javascript
+    const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+    ```
+- `itemToDelete`: An object storing the `id` and `type` of the item being considered for deletion.
+  Used by the delete confirmation dialog.
+    ```javascript
+    const [itemToDelete, setItemToDelete] = useState({ id: null, type: null });
+    ```
+- `isLoading`: A boolean state indicating whether data is currently being loaded, used to display
+  loading spinners and disable buttons during API requests.
+    ```javascript
+    const [isLoading, setIsLoading] = useState(false);
+    ```
+- `selectedTab`: An integer representing the index of the currently selected tab in the `Tabs`
+  component.
+    ```javascript
+    const [selectedTab, setSelectedTab] = useState(0);
+    ```
 
-- **Purpose**:  
-  Fetches all necessary data for the dashboard from multiple API endpoints concurrently. This
-  includes dashboard statistics, user data, insights, and feedback.
+### Functions/Methods
 
-- **Implementation Details**:
+#### `fetchData`
 
-    - Reads the authorization token from `localStorage`.
-    - Uses the `Promise.all` method to perform concurrent API calls.
-    - Updates state variables: `stats`, `users`, `insights`, and `feedbacks`.
-    - Displays a toast (via Chakra UI’s `useToast`) on errors.
-    - Toggles the `isLoading` state correctly on start and completion.
+- **Description**: Asynchronously fetches data required for the admin dashboard from the backend
+  API. This includes dashboard statistics, user data, insight data, and feedback data. It uses
+  `Promise.all` to fetch data concurrently and updates the component's state with the fetched data.
+  It also handles error scenarios and displays toast notifications using `useToast`.
+- **Parameters**: None
+- **Return Value**: None (implicitly returns a Promise)
+- **Usage**: Called on component mount using `useEffect` and when the "Refresh" button is clicked.
 
-- **Parameters**:  
-  No external parameters. The function accesses required values from state and context.
+    ```javascript
+    const fetchData = useCallback(async () => { ... }, [toast]);
 
-- **Return Value**:  
-  Returns a Promise that resolves once the data is successfully fetched or an error is handled; no
-  explicit return value is used in the component.
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+    ```
 
-- **Usage**:  
-  The function is invoked on component mount (via `useEffect`) and also when the user clicks the
-  "Refresh" button.
+#### `handleDelete`
 
----
+- **Description**: Asynchronously handles the deletion of an item (user, insight, or feedback). It
+  takes the `itemToDelete` state, determines the API endpoint based on the `type`, sends a DELETE
+  request to the backend, and updates the UI upon successful deletion by refetching data using
+  `fetchData`. Error handling and toast notifications are also implemented.
+- **Parameters**: None
+- **Return Value**: None (implicitly returns a Promise)
+- **Usage**: Called when the "Delete" button in the AlertDialog is clicked.
 
-### handleDelete
+    ```javascript
+    const handleDelete = useCallback(async () => { ... }, [itemToDelete, fetchData, toast]);
+    ```
 
-- **Purpose**:  
-  Deletes an item (user, insight, or feedback) from the system using a DELETE API endpoint based on
-  the current `itemToDelete` state.
+#### `handleSubscriptionChange`
 
-- **Implementation Details**:
-
-    - Retrieves the token from `localStorage`.
-    - Constructs the dynamic URL using `itemToDelete.type` and `itemToDelete.id`.
-    - Sends a DELETE request; on success, a success toast is displayed, and data is re-fetched.
-    - On failure, an error toast is shown.
-    - Closes the deletion confirmation dialog by updating `isDeleteAlertOpen`.
-
-- **Parameters**:  
-  No parameters are directly passed to the function; it relies on the `itemToDelete` state.
-
-- **Return Value**:  
-  Returns a Promise that resolves after the deletion operation, with side effects on component
-  state.
-
-- **Usage**:  
-  Bound to the "Delete" button inside the AlertDialog for deletion confirmation.
-
----
-
-### handleSubscriptionChange
-
-- **Purpose**:  
-  Updates a user's subscription status by issuing a PUT request to the user subscription endpoint.
-
-- **Implementation Details**:
-
-    - Accepts the user’s unique identifier and the new subscription status as parameters.
-    - Sends a PUT request, including a JSON payload with the new subscription status.
-    - On a successful response, updates the `users` state locally.
-    - Displays toast notifications for success or error.
-
+- **Description**: Asynchronously updates a user's subscription status. It sends a PUT request to
+  the `/api/admin/users/:userId/subscription` endpoint with the new subscription status. Upon
+  success, it updates the `users` state to reflect the change. Error handling and toast
+  notifications are included.
 - **Parameters**:
+    - `userId`: The ID of the user whose subscription status is to be updated.
+    - `newStatus`: The new subscription status (e.g., "active", "canceled").
+- **Return Value**: None (implicitly returns a Promise)
+- **Usage**: Called when the subscription status Select dropdown is changed in the Users tab table.
 
-    - userId (String): The unique identifier of the user whose subscription is to be updated.
-    - newStatus (String): The new subscription status (e.g., "active", "free", "trialing", etc.).
+    ```javascript
+    const handleSubscriptionChange = useCallback(async (userId, newStatus) => { ... }, [toast]);
+    ```
 
-- **Return Value**:  
-  Returns a Promise that resolves when the update is complete, with updated local state.
+#### `handlePrivacyChange`
 
-- **Usage**:  
-  Invoked when a user changes the subscription using the provided `<Select>` in the "Users" tab.
+- **Description**: Asynchronously updates the privacy setting (public/private) of an insight. It
+  sends a PUT request to the `/api/admin/insights/:insightId/privacy` endpoint with the new privacy
+  status. On success, it updates the `insights` state. Error handling and toast notifications are
+  included.
+- **Parameters**:
+    - `insightId`: The ID of the insight whose privacy setting is to be updated.
+    - `newPrivacy`: A boolean indicating the new privacy status (true for private, false for
+      public).
+- **Return Value**: None (implicitly returns a Promise)
+- **Usage**: Called when the Switch component for privacy is toggled in the Insights tab table.
 
----
+    ```javascript
+    const handlePrivacyChange = useCallback(async (insightId, newPrivacy) => { ... }, [toast]);
+    ```
 
-### renderOverviewTab
+#### `renderOverviewTab`
 
-- **Purpose**:  
-  Renders the "Overview" tab content which includes statistics cards and line charts for user growth
-  and insight growth.
+- **Description**: Renders the content for the "Overview" tab. This includes:
+    - Stat cards displaying key metrics from `stats.stats`.
+    - A Line chart visualizing user growth over time using `stats.userGrowth`.
+    - A Line chart visualizing insight growth over time using `stats.insightsStats.insightGrowth`.
+    - A Pie chart showing the distribution of insights across different models used, derived from
+      the `insights` data.
+    - A stat card showing the total number of insights.
+- **Parameters**: None
+- **Return Value**: JSX.Element - The React elements to render the Overview tab content.
+- **Usage**: Called within the `TabPanel` for the "Over" tab in the `Tabs` component.
 
-- **Implementation Details**:
+    ```javascript
+    const renderOverviewTab = useCallback(() => { ... }, [stats, insights]);
+    ```
 
-    - Uses Chakra UI components (e.g., `StatGroup`, `SimpleGrid`, `Card`) to display aggregated
-      metrics.
-    - Processes keys of `stats.stats` to create individual cards.
-    - Renders two line charts (if data is available): one for user growth and one for insight
-      growth.
-    - Configures charts with dataset labels, data points, and styling options.
+### UI Rendering
 
-- **Parameters**:  
-  No parameters; uses the component’s state (`stats` and `insights`).
+The `Admin` component renders the following UI elements using Chakra UI components:
 
-- **Return Value**:  
-  Returns a JSX element that represents the entire overview tab content.
+- **Container**: Provides a responsive container for the entire dashboard.
+- **Heading**: Displays the title "Admin Dashboard".
+- **Button**: A "Refresh" button to manually trigger data refetching.
+- **Tabs**: Organizes the dashboard into tabbed sections ("Over", "Usrs", "Insights", "Feed").
+- **TabList**, **Tab**, **TabPanels**, **TabPanel**: Components for creating and managing tabs.
+- **Table**, **Thead**, **Tbody**, **Tr**, **Th**, **Td**: Components for displaying data in tables
+  (used in Users, Insights, and Feedback tabs).
+- **Select**: Used in the Users tab to update user subscription status.
+- **Switch**: Used in the Insights tab to toggle insight privacy.
+- **Badge**: Used in the Feedback tab to display feedback type.
+- **AlertDialog**: Used to confirm item deletion before proceeding.
+- **StatGroup**, **SimpleGrid**, **Stat**, **StatLabel**, **StatNumber**, **Card**, **CardBody**,
+  **Box**: Chakra UI layout and stat display components used in the Overview tab.
+- **Line**, **Pie**: `react-chartjs-2` components for rendering charts in the Overview tab.
+- **Spinner**: Displays a loading spinner when data is being fetched.
+- **Center**, **VStack**, **HStack**: Chakra UI layout components.
 
-- **Usage**:  
-  Invoked within the `<TabPanel>` for the Overview tab in the main component render method.
+### Dependencies
 
----
+The `Admin.jsx` component imports and uses the following modules:
 
-## Component Layout and Behavior
+- **React Hooks**:
+    - `useState`, `useEffect`, `useCallback`, `useRef` from 'react' for state management, side
+      effects, memoization, and referencing DOM elements.
+- **Chakra UI Components**:
+    - Various components like `Container`, `Table`, `Button`, `Card`, `Tabs`, `AlertDialog`, `Stat`,
+      `SimpleGrid`, `Box`, `Spinner`, `Center`, `VStack`, `Heading`, `Select`, `HStack`, `Switch`,
+      `Badge`, etc. from '@chakra-ui/react' for building the UI.
+    - `useToast` from '@chakra-ui/react' for displaying toast notifications.
+    - `DeleteIcon` from '@chakra-ui/icons' for delete icons in buttons.
+- **Chart Libraries**:
+    - `Line`, `Pie` from 'react-chartjs-2' for rendering charts.
+    - `Chart as ChartJS`, `CategoryScale`, `LinearScale`, `PointElement`, `LineElement`,
+      `ArcElement`, `BarElement`, `Title`, `Tooltip`, `Legend` from 'chart.js' for chart
+      configuration and registration.
+- **API Configuration**:
+    - `API_URL` from './App' to define the base URL for API requests.
 
-1. **Loading State**:
+### API Endpoints
 
-    - When data is being fetched (i.e., `isLoading` is true and no users are available), the
-      component displays a full-height centered spinner.
+The `Admin` component interacts with the following backend API endpoints:
 
-2. **Header Section**:
+- **`GET ${API_URL}/api/admin/dashboard`**: Fetches dashboard statistics.
+- **`GET ${API_URL}/api/admin/users`**: Fetches a list of users.
+- **`GET ${API_URL}/api/admin/insights`**: Fetches a list of insights.
+- **`GET ${API_URL}/api/admin/feedbacks`**: Fetches a list of user feedbacks.
+- **`DELETE ${API_URL}/api/admin/:type/:id`**: Deletes an item (user, insight, or feedback) based on
+  its type and ID.
+- **`PUT ${API_URL}/api/admin/users/:userId/subscription`**: Updates a user's subscription status.
+- **`PUT ${API_URL}/api/admin/insights/:insightId/privacy`**: Updates an insight's privacy setting.
 
-    - The header includes the "Admin Dashboard" title and a "Refresh" button, which will re-run
-      `fetchData`.
+### Usage Example
 
-3. **Tabs**:
-
-    - The component is organized using Chakra UI’s `<Tabs>` with four panels:
-        - **Overview**: Shows general statistics and growth charts.
-        - **Users**: Displays a table of user data. Includes subscription management controls and
-          delete actions.
-        - **Insights**: Displays a table of insights with delete actions.
-        - **Feedback**: Displays a table of user feedback with type badges and delete actions.
-
-4. **Alert Dialog**:
-
-    - An `AlertDialog` is used to confirm deletion of any item. The dialog is controlled by the
-      `isDeleteAlertOpen` state and is hooked into the `handleDelete` function.
-
-5. **Charts Rendering**:
-    - The component uses the `Line` chart component from react-chartjs-2 to render charts
-      dynamically based on available statistical data.
-
----
-
-## Usage Example
-
-Below is a simple example of how to integrate the **Admin** component into your application (e.g.,
-in a routing setup):
+The `Admin` component is intended to be used within the main application to provide an
+administrative interface. It would likely be rendered within a route that is protected and only
+accessible to users with administrator roles.
 
 ```jsx
-// Example: src/App.jsx
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// Example of how Admin component might be used in App.jsx or similar routing component
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Admin from './Admin';
-import Landing from './Landing';
-import Login from './Login';
+import Login from './Login'; // Assuming a Login component exists
 
-const App = () => {
-    return (
-        <Router>
-            <Routes>
-                {/* Other application routes */}
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/" element={<Landing />} />
-            </Routes>
-        </Router>
-    );
-};
+function App() {
+  const isAdmin = /* ... logic to check if user is admin ... */;
+  const isLoggedIn = /* ... logic to check if user is logged in ... */;
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        {isAdmin && isLoggedIn ? ( // Protect the admin route
+          <Route path="/admin" element={<Admin />} />
+        ) : (
+          <Route path="/admin" element={<p>Unauthorized Access</p>} /> // Or redirect to login
+        )}
+        {/* ... other routes ... */}
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;
 ```
 
-In this example, navigating to `/admin` will render the Admin Dashboard.
+This documentation provides a comprehensive overview of the `Admin.jsx` component, detailing its
+functionality, state management, UI rendering, dependencies, and API interactions. It should serve
+as a valuable resource for developers working with this codebase.
 
----
-
-## Future Improvements
-
-- **Pagination and Filtering**: Enhance tables (Users, Insights, Feedback) to support pagination,
-  searching, and sorting.
-- **Enhanced Error Handling**: Consider more granular error responses and UI feedback for network
-  errors.
-- **Optimistic UI Updates**: Implement optimistic updates to improve user experience on subscription
-  changes and deletions.
-- **Role-Based Access**: Integrate role-based authentication to secure the admin panel.
-- **Unit & Integration Tests**: Add comprehensive tests for this component using testing libraries
-  like Jest and React Testing Library.
-
----
-
-This documentation should provide you with a clear understanding of the purpose and functionality of
-**src/Admin.jsx**. The component plays an essential role in the administration process and serves as
-the backbone for monitoring and managing key aspects of the application.
+```
+````

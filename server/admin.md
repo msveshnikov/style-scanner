@@ -1,416 +1,674 @@
-# Admin Routes API Documentation
-
-This document provides a comprehensive guide to the administrative API routes defined in the file
-`server/admin.js`. It covers an overview of the module, detailed descriptions of each endpoint
-(including parameters, return values, and error handling), middleware dependencies, usage examples,
-and its role within the overall project structure.
-
----
+````markdown
+# Documentation for `server/admin.js`
 
 ## Overview
 
-The `server/admin.js` module defines a set of administrative endpoints for managing users, insights,
-and feedbacks in the application. The routes are registered by the exported function
-`adminRoutes(app)`, which accepts an Express application instance.
+The `server/admin.js` file defines a set of API routes specifically for administrative tasks within
+the application. These routes are designed to be accessed only by users with administrator
+privileges. It handles operations related to user management, feedback management, insight
+management, and provides a dashboard endpoint for key application statistics.
 
-Key characteristics:
+This file is part of the `server` directory in the project, indicating its role in handling backend
+logic and API endpoints. It utilizes models defined in `server/models` (`User.js`, `Feedback.js`,
+`Insight.js`) to interact with the database and middleware functions from
+`server/middleware/auth.js` (`authenticateToken`, `isAdmin`) for securing these administrative
+endpoints.
 
-- **Authentication & Authorization:** Every route is secured using the `authenticateToken` and
-  `isAdmin` middlewares (imported from `./middleware/auth.js`) to ensure that only authenticated
-  administrators can access these endpoints.
-- **Database Models:** It interacts with three main Mongoose models:
-    - **User** (`./models/User.js`)
-    - **Insight** (`./models/Insight.js`)
-    - **Feedback** (`./models/Feedback.js`)
-- **Error Handling:** If a database or operational error occurs, the route returns a 500 status code
-  with a JSON error message. Specific resource checks (e.g., not found) return a 404 status code.
+## Dependencies
 
----
+This file imports the following modules:
 
-## Project Structure Context
+- `authenticateToken`, `isAdmin` from `./middleware/auth.js`: Middleware functions for JWT
+  authentication and admin role authorization.
+- `User` from `./models/User.js`: Mongoose model for the `users` collection.
+- `Feedback` from `./models/Feedback.js`: Mongoose model for the `feedbacks` collection.
+- `Insight` from `./models/Insight.js`: Mongoose model for the `insights` collection.
 
-Within the overall project, the `server/admin.js` file is part of the backend codebase. The project
-structure includes:
+## Admin Routes
 
-- **Client-side:** Contains React components (in the `src` folder) such as `Admin.jsx`, `Login.jsx`,
-  etc.
-- **Server-side:** Contains several API endpoint files including `admin.js`, `user.js`, and others.
-  The `admin.js` helps expose administrative operations that are often consumed by the front-end
-  admin pages (such as `Admin.jsx`).
-- **Public & Docs:** Static assets and documentation files.
+The `adminRoutes` function is the main export of this file. It takes an Express `app` instance as a
+parameter and defines all the admin-related routes on it. Each route is documented below:
 
-The administrative endpoints provided in this module typically interface with the frontend admin
-panel for displaying dashboards, user lists, feedback, and handling delete/update operations.
+### 1. `GET /api/admin/users`
 
----
+**Description:** Retrieves a list of all users in the system. This route is protected and can only
+be accessed by authenticated administrators. User passwords are excluded from the response for
+security reasons. The users are sorted by creation date in descending order (newest first).
 
-## Endpoints
+**Middleware:**
 
-Below is a detailed description of each route defined in `server/admin.js`.
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
----
+**Request:**
 
-### 1. GET /api/admin/users
-
-**Description:**  
-Retrieves a list of all registered users. The password field is excluded from the returned data. The
-list is sorted by creation date (most recent first).
-
-**Middlewares:**
-
-- `authenticateToken`
-- `isAdmin`
-
-**Route Handler Details:**
-
-- Uses `User.find()` to fetch all user documents.
-- Uses Mongoose’s `.select('-password')` to exclude password fields.
-- Sorts users using `.sort({ createdAt: -1 })`.
+- Method: `GET`
+- Path: `/api/admin/users`
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
 
 **Response:**
 
-- On success: Returns a JSON array of user objects.
-- On error: Returns status 500 with JSON:
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body: An array of user objects. Each user object contains user details excluding the
+      `password` field.
+
     ```json
-    { "error": "Internal server error" }
+    [
+        {
+            "_id": "user_id_1",
+            "email": "user1@example.com",
+            "username": "user1",
+            "subscriptionStatus": "active",
+            "createdAt": "2024-01-01T10:00:00.000Z",
+            "updatedAt": "2024-01-01T10:00:00.000Z",
+            "__v": 0
+        },
+        {
+            "_id": "user_id_2",
+            "email": "user2@example.com",
+            "username": "user2",
+            "subscriptionStatus": "trialing",
+            "createdAt": "2024-01-02T14:30:00.000Z",
+            "updatedAt": "2024-01-02T14:30:00.000Z",
+            "__v": 0
+        }
+        // ... more users
+    ]
     ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X GET http://localhost:3000/api/admin/users \
-  -H "Authorization: Bearer <your_admin_token>"
+curl -X GET \
+  http://localhost:3000/api/admin/users \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
 ```
+````
 
----
+### 2. `GET /api/admin/dashboard`
 
-### 2. GET /api/admin/dashboard
+**Description:** Provides aggregated data for the admin dashboard, including key statistics and
+growth trends. This route is protected and accessible only to authenticated administrators. It
+fetches data about users, insights, and calculates metrics like conversion rate and user/insight
+growth over the last 30 days.
 
-**Description:**  
-Provides various aggregated statistics for the dashboard, including user counts, subscription
-conversions, and growth metrics for users and insights over the last 30 days.
+**Middleware:**
 
-**Middlewares:**
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
-- `authenticateToken`
-- `isAdmin`
+**Request:**
 
-**Route Handler Details:**
-
-- Aggregates the following concurrently using `Promise.all`:
-    - **totalUsers:** Total number of users.
-    - **premiumUsers:** Count of users with `subscriptionStatus: 'active'`.
-    - **trialingUsers:** Count of users with `subscriptionStatus: 'trialing'`.
-    - **totalInsights:** Total number of insights.
-    - **userGrowth:** Aggregation data grouped by creation date for users.
-    - **insightGrowth:** Aggregation data grouped by creation date for insights.
-- Converts the conversion rate (premiumUsers/totalUsers) into a percentage, formatted to two
-  decimals.
+- Method: `GET`
+- Path: `/api/admin/dashboard`
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
 
 **Response:**
 
-- On success: Returns a JSON object, for example:
-    ```json
-    {
-      "stats": {
-        "totalUsers": 100,
-        "premiumUsers": 25,
-        "trialingUsers": 10,
-        "conversionRate": "25.00"
-      },
-      "userGrowth": [
-        { "_id": "2023-09-01", "count": 5 },
-        { "_id": "2023-09-02", "count": 8 },
-        ...
-      ],
-      "insightsStats": {
-        "totalInsights": 200,
-        "insightGrowth": [
-          { "_id": "2023-09-01", "count": 10 },
-          { "_id": "2023-09-02", "count": 15 },
-          ...
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body: JSON object containing dashboard statistics, user growth data, and insight statistics.
+        ```json
+        {
+            "stats": {
+                "totalUsers": 150,
+                "premiumUsers": 50,
+                "trialingUsers": 20,
+                "conversionRate": "33.33"
+            },
+            "userGrowth": [
+                { "_id": "2024-07-20", "count": 5 },
+                { "_id": "2024-07-21", "count": 2 }
+                // ... user growth for last 30 days
+            ],
+            "insightsStats": {
+                "totalInsights": 500,
+                "insightGrowth": [
+                    { "_id": "2024-07-20", "count": 15 },
+                    { "_id": "2024-07-21", "count": 10 }
+                    // ... insight growth for last 30 days
+                ]
+            }
+        }
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
+
+**Usage Example:**
+
+```bash
+curl -X GET \
+  http://localhost:3000/api/admin/dashboard \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
+```
+
+### 3. `GET /api/admin/feedbacks`
+
+**Description:** Retrieves a list of all feedback entries submitted by users. This route is
+protected and accessible only to authenticated administrators. Feedback entries are populated with
+the email of the user who submitted the feedback and are sorted by creation date in descending order
+(newest first).
+
+**Middleware:**
+
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
+
+**Request:**
+
+- Method: `GET`
+- Path: `/api/admin/feedbacks`
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
+
+**Response:**
+
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body: An array of feedback objects, populated with user email.
+        ```json
+        [
+            {
+                "_id": "feedback_id_1",
+                "userId": {
+                    "_id": "user_id_1",
+                    "email": "user1@example.com"
+                },
+                "feedbackText": "This is feedback from user 1.",
+                "createdAt": "2024-07-22T09:00:00.000Z",
+                "updatedAt": "2024-07-22T09:00:00.000Z",
+                "__v": 0
+            },
+            {
+                "_id": "feedback_id_2",
+                "userId": {
+                    "_id": "user_id_2",
+                    "email": "user2@example.com"
+                },
+                "feedbackText": "This is feedback from user 2.",
+                "createdAt": "2024-07-22T10:30:00.000Z",
+                "updatedAt": "2024-07-22T10:30:00.000Z",
+                "__v": 0
+            }
+            // ... more feedbacks
         ]
-      }
-    }
-    ```
-- On error: Returns status 500 with JSON:
-    ```json
-    { "error": "Internal server error" }
-    ```
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X GET http://localhost:3000/api/admin/dashboard \
-  -H "Authorization: Bearer <your_admin_token>"
+curl -X GET \
+  http://localhost:3000/api/admin/feedbacks \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
 ```
 
----
+### 4. `GET /api/admin/insights`
 
-### 3. GET /api/admin/feedbacks
+**Description:** Retrieves a list of all insights generated by users. This route is protected and
+accessible only to authenticated administrators. Insights are populated with the email of the user
+who generated them and are sorted by creation date in descending order (newest first).
 
-**Description:**  
-Fetches all user feedbacks stored in the database.
+**Middleware:**
 
-**Middlewares:**
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
-- `authenticateToken`
-- `isAdmin`
+**Request:**
 
-**Route Handler Details:**
-
-- Utilizes `Feedback.find()` to retrieve feedback documents.
-- Uses `.populate('userId', 'email')` to include the associated user's email information.
-- Sorts the data by creation date in descending order.
+- Method: `GET`
+- Path: `/api/admin/insights`
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
 
 **Response:**
 
-- On success: Returns an array of feedback objects.
-- On error: Returns a 500 status JSON error.
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body: An array of insight objects, populated with user email.
+        ```json
+        [
+            {
+                "_id": "insight_id_1",
+                "userId": {
+                    "_id": "user_id_1",
+                    "email": "user1@example.com"
+                },
+                "model": "gemini",
+                "prompt": "Generate outfit ideas for a party.",
+                "insightText": "Outfit ideas...",
+                "isPrivate": false,
+                "createdAt": "2024-07-22T11:00:00.000Z",
+                "updatedAt": "2024-07-22T11:00:00.000Z",
+                "__v": 0
+            },
+            {
+                "_id": "insight_id_2",
+                "userId": {
+                    "_id": "user_id_2",
+                    "email": "user2@example.com"
+                },
+                "model": "openai",
+                "prompt": "Suggest colors for autumn.",
+                "insightText": "Autumn color palette...",
+                "isPrivate": true,
+                "createdAt": "2024-07-22T12:30:00.000Z",
+                "updatedAt": "2024-07-22T12:30:00.000Z",
+                "__v": 0
+            }
+            // ... more insights
+        ]
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X GET http://localhost:3000/api/admin/feedbacks \
-  -H "Authorization: Bearer <your_admin_token>"
+curl -X GET \
+  http://localhost:3000/api/admin/insights \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
 ```
 
----
+### 5. `GET /api/admin/insights-model-stats`
 
-### 4. GET /api/admin/insights
+**Description:** Retrieves statistics about insight usage per model. This route is protected and
+accessible only to authenticated administrators. It aggregates insight data to count the number of
+insights generated by each AI model.
 
-**Description:**  
-Retrieves all insights. Each insight includes the associated user’s email via the Mongoose populate
-feature.
+**Middleware:**
 
-**Middlewares:**
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
-- `authenticateToken`
-- `isAdmin`
+**Request:**
 
-**Route Handler Details:**
-
-- Uses `Insight.find()` and populates the `userId` field (email only).
-- Sorted by creation date (newest first).
+- Method: `GET`
+- Path: `/api/admin/insights-model-stats`
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
 
 **Response:**
 
-- On success: Returns a JSON array of insight objects.
-- On error: Returns status 500 with an error message.
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body: An array of objects, each showing the count of insights for a specific model.
+        ```json
+        [
+            { "_id": "gemini", "count": 300 },
+            { "_id": "openai", "count": 200 }
+        ]
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X GET http://localhost:3000/api/admin/insights \
-  -H "Authorization: Bearer <your_admin_token>"
+curl -X GET \
+  http://localhost:3000/api/admin/insights-model-stats \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
 ```
 
----
+### 6. `DELETE /api/admin/users/:id`
 
-### 5. DELETE /api/admin/users/:id
+**Description:** Deletes a user and all associated insights from the system. This is a destructive
+operation and should be used with caution. This route is protected and accessible only to
+authenticated administrators.
 
-**Description:**  
-Deletes a user specified by the `id` parameter. Additionally, deletes all insights associated with
-that user.
+**Middleware:**
 
-**Middlewares:**
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
-- `authenticateToken`
-- `isAdmin`
+**Request:**
 
-**Route Handler Details:**
-
-- Uses `User.findByIdAndDelete(req.params.id)` to remove the user.
-- If no user is found, returns a 404 error.
-- Deletes the associated insights via `Insight.deleteMany({ userId: req.params.id })`.
+- Method: `DELETE`
+- Path: `/api/admin/users/:id`
+    - `:id`: The ID of the user to delete (path parameter).
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
 
 **Response:**
 
-- On success: Returns a JSON message confirming deletion:
-    ```json
-    { "message": "User and associated data deleted successfully" }
-    ```
-- On resource not found: Returns status 404 with an error JSON.
-- On error: Returns a 500 status JSON error.
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "message": "User and associated data deleted successfully" }
+        ```
+
+- **Error (404 Not Found):**
+
+    - Status Code: `404`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "User not found" }
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X DELETE http://localhost:3000/api/admin/users/USER_ID \
-  -H "Authorization: Bearer <your_admin_token>"
+curl -X DELETE \
+  http://localhost:3000/api/admin/users/user_id_to_delete \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
 ```
 
----
+### 7. `DELETE /api/admin/feedbacks/:id`
 
-### 6. DELETE /api/admin/feedbacks/:id
+**Description:** Deletes a specific feedback entry. This route is protected and accessible only to
+authenticated administrators.
 
-**Description:**  
-Deletes a feedback entry specified by the `id` parameter.
+**Middleware:**
 
-**Middlewares:**
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
-- `authenticateToken`
-- `isAdmin`
+**Request:**
 
-**Route Handler Details:**
-
-- Uses `Feedback.findByIdAndDelete(req.params.id)`.
-- Returns 404 if the feedback is not found.
+- Method: `DELETE`
+- Path: `/api/admin/feedbacks/:id`
+    - `:id`: The ID of the feedback entry to delete (path parameter).
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
 
 **Response:**
 
-- On success: Returns:
-    ```json
-    { "message": "Feedback deleted successfully" }
-    ```
-- On resource not found: Returns status 404.
-- On error: Returns status 500 with an error message.
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "message": "Feedback deleted successfully" }
+        ```
+
+- **Error (404 Not Found):**
+
+    - Status Code: `404`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Feedback not found" }
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X DELETE http://localhost:3000/api/admin/feedbacks/FEEDBACK_ID \
-  -H "Authorization: Bearer <your_admin_token>"
+curl -X DELETE \
+  http://localhost:3000/api/admin/feedbacks/feedback_id_to_delete \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
 ```
 
----
+### 8. `DELETE /api/admin/insights/:id`
 
-### 7. DELETE /api/admin/insights/:id
+**Description:** Deletes a specific insight. This route is protected and accessible only to
+authenticated administrators.
 
-**Description:**  
-Deletes a insight specified by the `id` parameter.
+**Middleware:**
 
-**Middlewares:**
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
-- `authenticateToken`
-- `isAdmin`
+**Request:**
 
-**Route Handler Details:**
-
-- Uses `Insight.findByIdAndDelete(req.params.id)`.
-- Returns a 404 status if the insight is not found.
+- Method: `DELETE`
+- Path: `/api/admin/insights/:id`
+    - `:id`: The ID of the insight to delete (path parameter).
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
 
 **Response:**
 
-- On success: Returns:
-    ```json
-    { "message": "Insight deleted successfully" }
-    ```
-- On resource not found: Returns status 404.
-- On error: Returns a 500 status JSON.
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "message": "Insight deleted successfully" }
+        ```
+
+- **Error (404 Not Found):**
+
+    - Status Code: `404`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Insight not found" }
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X DELETE http://localhost:3000/api/admin/insights/INSIGHT_ID \
-  -H "Authorization: Bearer <your_admin_token>"
+curl -X DELETE \
+  http://localhost:3000/api/admin/insights/insight_id_to_delete \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>'
 ```
 
----
+### 9. `PUT /api/admin/users/:id/subscription`
 
-### 8. PUT /api/admin/users/:id/subscription
+**Description:** Updates the subscription status of a user. This route is protected and accessible
+only to authenticated administrators. Allowed subscription statuses are: `active`, `free`,
+`trialing`, `past_due`, `canceled`, `incomplete_expired`.
 
-**Description:**  
-Updates a user’s subscription status. The new status must be one of the allowed values.
+**Middleware:**
 
-**Middlewares:**
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
 
-- `authenticateToken`
-- `isAdmin`
+**Request:**
 
-**Request Body:**
-
-- JSON object containing:
+- Method: `PUT`
+- Path: `/api/admin/users/:id/subscription`
+    - `:id`: The ID of the user to update (path parameter).
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
+    - `Content-Type: application/json`
+- Body:
     ```json
     {
-        "subscriptionStatus": "active" // or "free", "trialing", "past_due", "canceled", "incomplete_expired"
+        "subscriptionStatus": "active" // or other valid status
     }
     ```
 
-**Route Handler Details:**
-
-- Validates that the provided `subscriptionStatus` is one of the following:
-    - "active"
-    - "free"
-    - "trialing"
-    - "past_due"
-    - "canceled"
-    - "incomplete_expired"
-- If invalid, returns a 400 status with an error message.
-- Looks up the user by `req.params.id`. If not found, returns a 404 error.
-- Updates the subscription status and saves the user.
-
 **Response:**
 
-- On success: Returns:
-    ```json
-    { "message": "User subscription updated successfully" }
-    ```
-- On invalid subscription status: Returns status 400:
-    ```json
-    { "error": "Invalid subscription status" }
-    ```
-- On resource not found: Returns status 404.
-- On error: Returns a 500 status JSON.
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "message": "User subscription updated successfully" }
+        ```
+
+- **Error (400 Bad Request):**
+
+    - Status Code: `400`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Invalid subscription status" }
+        ```
+
+- **Error (404 Not Found):**
+
+    - Status Code: `404`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "User not found" }
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
 
 **Usage Example:**
 
 ```bash
-curl -X PUT http://localhost:3000/api/admin/users/USER_ID/subscription \
-  -H "Authorization: Bearer <your_admin_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"subscriptionStatus": "active"}'
+curl -X PUT \
+  http://localhost:3000/api/admin/users/user_id_to_update/subscription \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>' \
+  -H 'Content-Type: application/json' \
+  -d '{ "subscriptionStatus": "canceled" }'
+```
+
+### 10. `PUT /api/admin/insights/:id/privacy`
+
+**Description:** Updates the privacy status (`isPrivate`) of an insight. This route is protected and
+accessible only to authenticated administrators.
+
+**Middleware:**
+
+- `authenticateToken`: Ensures the request includes a valid JWT token.
+- `isAdmin`: Verifies that the authenticated user has administrator privileges.
+
+**Request:**
+
+- Method: `PUT`
+- Path: `/api/admin/insights/:id/privacy`
+    - `:id`: The ID of the insight to update (path parameter).
+- Headers:
+    - `Authorization: Bearer <JWT_TOKEN>` (Required)
+    - `Content-Type: application/json`
+- Body:
+    ```json
+    {
+        "isPrivate": true // or false
+    }
+    ```
+
+**Response:**
+
+- **Success (200 OK):**
+
+    - Status Code: `200`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "message": "Insight privacy status updated successfully" }
+        ```
+
+- **Error (400 Bad Request):**
+
+    - Status Code: `400`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Invalid private status" }
+        ```
+
+- **Error (404 Not Found):**
+
+    - Status Code: `404`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Insight not found" }
+        ```
+
+- **Error (500 Internal Server Error):**
+    - Status Code: `500`
+    - Content-Type: `application/json`
+    - Body:
+        ```json
+        { "error": "Internal server error" }
+        ```
+
+**Usage Example:**
+
+```bash
+curl -X PUT \
+  http://localhost:3000/api/admin/insights/insight_id_to_update/privacy \
+  -H 'Authorization: Bearer <ADMIN_JWT_TOKEN>' \
+  -H 'Content-Type: application/json' \
+  -d '{ "isPrivate": false }'
 ```
 
 ---
 
-## Integration and Usage in the Project
+This documentation provides a comprehensive overview of the `admin.js` file and its API endpoints,
+intended for developers who need to understand and maintain the backend admin functionality.
 
-### How to Register Admin Routes
-
-In your main server file (for example, `server/index.js`), you would import and register the admin
-routes as follows:
-
-```javascript
-import express from 'express';
-import adminRoutes from './admin.js';
-
-const app = express();
-
-// Middlewares for parsing JSON
-app.use(express.json());
-
-// Register admin routes
-adminRoutes(app);
-
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
 ```
 
-### Middleware Dependencies
-
-- **authenticateToken:**  
-  Ensures that the request has a valid authentication token. Typically checks the header for a
-  bearer token.
-- **isAdmin:**  
-  Verifies that the authenticated user has administrative privileges. Both of these middlewares are
-  defined in `server/middleware/auth.js`.
-
----
-
-## Summary
-
-The `server/admin.js` file is central to administration activities in the application. It provides
-secure endpoints to:
-
-- Retrieve users, feedbacks, insights, and dashboard statistics.
-- Remove users (with cascade deletion for associated data), insights, and feedbacks.
-- Update user subscription statuses with proper validation.
-
-This module is essential for both the backend administrative operations and the integration with the
-frontend admin panel, ensuring that only authorized admin users can perform these sensitive actions.
-
-Feel free to refer to this documentation when updating or debugging the admin endpoints.
+```

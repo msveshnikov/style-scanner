@@ -79,7 +79,7 @@ function StyleScanner() {
             return;
         }
         setScanning(true);
-        setInsights(null); // Clear previous insights when scanning starts
+        setInsights(null);
         const reader = new FileReader();
         reader.onloadend = async () => {
             const base64Image = reader.result.split(',')[1];
@@ -98,7 +98,7 @@ function StyleScanner() {
                     })
                 });
                 if (!response.ok) {
-                    if (response.status === 403) {
+                    if (response.status === 401) {
                         throw new Error('Please login to scan your style');
                     }
                     const errorData = await response.json();
