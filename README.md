@@ -124,5 +124,3 @@ Core Values:
 - Privacy and security focus
 
 # TODO
-
-- fix photo is in this format from API:  "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/

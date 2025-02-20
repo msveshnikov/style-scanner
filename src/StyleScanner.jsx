@@ -20,10 +20,12 @@ import {
     CardBody,
     Stack,
     Divider,
-    Spinner
+    Spinner,
+    InputGroup
 } from '@chakra-ui/react';
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { API_URL, UserContext } from './App';
+import { AiOutlineUpload } from 'react-icons/ai';
 
 function StyleScanner() {
     const [file, setFile] = useState(null);
@@ -34,6 +36,7 @@ function StyleScanner() {
     const [insights, setInsights] = useState(null);
     const toast = useToast();
     const { user } = useContext(UserContext);
+    const fileInputRef = useRef(null);
 
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -118,11 +121,12 @@ function StyleScanner() {
         reader.readAsDataURL(file);
     };
 
+    const handleButtonClick = () => {
+        fileInputRef.current.click();
+    };
+
     return (
         <Box p={6} maxW="1200px" mx="auto">
-            <Heading as="h2" size="xl" textAlign="center" mb={6}>
-                Style Scanner
-            </Heading>
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
                 <Card>
                     <CardHeader>
@@ -132,7 +136,23 @@ function StyleScanner() {
                         <VStack spacing={4}>
                             <FormControl isRequired>
                                 <FormLabel>Outfit Photo</FormLabel>
-                                <Input type="file" accept="image/*" onChange={handleFileChange} />
+                                <InputGroup>
+                                    <Button
+                                        leftIcon={<AiOutlineUpload />}
+                                        onClick={handleButtonClick}
+                                        colorScheme="blue"
+                                        variant="solid"
+                                    >
+                                        Upload Photo
+                                    </Button>
+                                    <Input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        hidden
+                                        ref={fileInputRef}
+                                    />
+                                </InputGroup>
                             </FormControl>
                             <FormControl>
                                 <FormLabel>Analysis Depth</FormLabel>
@@ -169,7 +189,7 @@ function StyleScanner() {
                                 />
                             </FormControl>
                             <Button
-                                colorScheme="blue"
+                                colorScheme="primary"
                                 size="lg"
                                 w="full"
                                 type="submit"
